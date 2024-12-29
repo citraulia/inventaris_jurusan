@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:80"  # Akses aplikasi via port 8080
+    volumes:
+      - .:/var/www/html  # Sinkronisasi direktori lokal dengan container
+    networks:
+      - app-network
+    depends_on:
+      - db  # Jalankan PostgreSQL terlebih dahulu
+  
+  db:
+    image: postgres:13  # Gunakan PostgreSQL versi 13
+    environment:
+      POSTGRES_USER: user  # Username PostgreSQL
+      POSTGRES_PASSWORD: password  # Password PostgreSQL
+      POSTGRES_DB: inventarisasi_db  # Nama database PostgreSQL
+    volumes:
+      - db-data:/var/lib/postgresql/data  # Data persisten PostgreSQL
+    ports:
+      - "5432:5432"  # Port PostgreSQL
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
