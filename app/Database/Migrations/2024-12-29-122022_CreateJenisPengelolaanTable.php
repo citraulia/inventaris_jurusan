@@ -9,11 +9,27 @@ class CreateJenisPengelolaanTable extends Migration
     public function up()
     {
         $this->forge->addField([
-            'jenis_id'       => ['type' => 'INT', 'constraint' => 11, 'auto_increment' => true],
-            'jenis_nama'     => ['type' => 'VARCHAR', 'constraint' => '32'],
-            'created_at'     => ['type' => 'DATETIME', 'null' => true],
-            'updated_at'     => ['type' => 'DATETIME', 'null' => true],
+            'jenis_id'   => [
+                'type'           => 'SERIAL',
+                'unsigned'       => true,
+            ],
+            'jenis_nama' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 32,
+                'unique'     => true,
+            ],
+            'created_at' => [
+                'type'    => 'TIMESTAMP',
+                'null'    => true,
+                'default' => null,
+            ],
+            'updated_at' => [
+                'type'    => 'TIMESTAMP',
+                'null'    => true,
+                'default' => null,
+            ],
         ]);
+
         $this->forge->addPrimaryKey('jenis_id');
         $this->forge->createTable('jenis_pengelolaan');
     }

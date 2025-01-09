@@ -12,12 +12,12 @@ class CreateInformasiBarangPendingTable extends Migration
             'pending_id' => [
                 'type'           => 'SERIAL',
                 'unsigned'       => true,
-                'auto_increment' => true,
             ],
             'pending_kode' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 32,
                 'null'       => false,
+                'unique'     => true,
             ],
             'pending_nama' => [
                 'type'       => 'VARCHAR',
@@ -74,19 +74,44 @@ class CreateInformasiBarangPendingTable extends Migration
             'created_at' => [
                 'type' => 'TIMESTAMP',
                 'null' => true,
+                'default' => null,
             ],
             'updated_at' => [
                 'type' => 'TIMESTAMP',
                 'null' => true,
+                'default' => null,
             ],
         ]);
 
         $this->forge->addPrimaryKey('pending_id');
+        $this->forge->addKey('kategori_fk');
+        $this->forge->addKey('lokasi_fk');
         $this->forge->createTable('informasi_barang_pending');
+
+        $db = \Config\Database::connect();
+        $db->query("
+            ALTER TABLE informasi_barang_pending
+            ADD CONSTRAINT kategori_pending_foreign
+            FOREIGN KEY (kategori_fk)
+            REFERENCES kategori_barang (kategori_nama)
+            ON UPDATE CASCADE;
+
+            ALTER TABLE informasi_barang_pending
+            ADD CONSTRAINT lokasi_pending_foreign
+            FOREIGN KEY (lokasi_fk)
+            REFERENCES lokasi_barang (lokasi_kode)
+            ON UPDATE CASCADE;
+        ");
     }
 
     public function down()
     {
+        $db = \Config\Database::connect();
+        $db->query("
+            ALTER TABLE informasi_barang_pending DROP CONSTRAINT IF EXISTS kategori_pending_foreign;
+            ALTER TABLE informasi_barang_pending DROP CONSTRAINT IF EXISTS lokasi_pending_foreign;
+        ");
+
         $this->forge->dropTable('informasi_barang_pending');
     }
 }

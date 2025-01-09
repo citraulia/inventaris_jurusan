@@ -8,18 +8,18 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-        $this->call('FotoBarangPendingSeeder');
+        $this->call('KategoriBarangSeeder');
+        $this->call('LokasiBarangSeeder');
+        $this->call('InformasiBarangSeeder');
         $this->call('FotoBarangSeeder');
         $this->call('InformasiBarangPendingSeeder');
-        $this->call('InformasiBarangSeeder');
+        $this->call('FotoBarangPendingSeeder');
         $this->call('JenisPengelolaanSeeder');
-        $this->call('KategoriBarangSeeder');
         $this->call('KepalaBagianTuSeeder');
-        $this->call('KumpulanBarangDipinjamSeeder');
-        $this->call('LokasiBarangSeeder');
-        $this->call('PengelolaanBarangSeeder');
-        $this->call('TransaksiPeminjamanSeeder');
-        $this->call('UserJurusanSeeder');
         $this->call('UserPeminjamSeeder');
+        $this->call('UserJurusanSeeder');
+        $this->call('TransaksiPeminjamanSeeder');
+        $this->call('KumpulanBarangDipinjamSeeder');
+        $this->call('PengelolaanBarangSeeder');
     }
 }

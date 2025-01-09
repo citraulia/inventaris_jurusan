@@ -10,14 +10,13 @@ class CreateInformasiBarangTable extends Migration
     {
         $this->forge->addField([
             'barang_id' => [
-                'type'           => 'INT',
-                'constraint'     => 11,
+                'type'           => 'SERIAL',
                 'unsigned'       => true,
-                'auto_increment' => true,
             ],
             'barang_kode' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 32,
+                'unique'     => true,
             ],
             'barang_nama' => [
                 'type'       => 'VARCHAR',
@@ -72,19 +71,45 @@ class CreateInformasiBarangTable extends Migration
             'created_at' => [
                 'type' => 'TIMESTAMP',
                 'null' => true,
+                'default' => null,
             ],
             'updated_at' => [
                 'type' => 'TIMESTAMP',
                 'null' => true,
+                'default' => null,
             ],
         ]);
 
         $this->forge->addKey('barang_id', true);
+        $this->forge->addKey('kategori_fk');
+        $this->forge->addKey('lokasi_fk');
+
         $this->forge->createTable('informasi_barang');
+
+        $db = \Config\Database::connect();
+        $db->query("
+            ALTER TABLE informasi_barang
+            ADD CONSTRAINT kategori_foreign
+            FOREIGN KEY (kategori_fk)
+            REFERENCES kategori_barang (kategori_nama)
+            ON UPDATE CASCADE;
+
+            ALTER TABLE informasi_barang
+            ADD CONSTRAINT lokasi_foreign
+            FOREIGN KEY (lokasi_fk)
+            REFERENCES lokasi_barang (lokasi_kode)
+            ON UPDATE CASCADE;
+        ");
     }
 
     public function down()
     {
+        $db = \Config\Database::connect();
+        $db->query("
+            ALTER TABLE informasi_barang DROP CONSTRAINT IF EXISTS kategori_foreign;
+            ALTER TABLE informasi_barang DROP CONSTRAINT IF EXISTS lokasi_foreign;
+        ");
+
         $this->forge->dropTable('informasi_barang');
     }
 }

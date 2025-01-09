@@ -11,22 +11,38 @@
         <div class="row">
             <div class="col-xl-3 col-md-6">
                 <div class="card bg-primary text-white mb-4">
-                    <div class="card-body">Total Barang yang Dimiliki : <?= Count($informasiBarang); ?></div>
+                    <div class="card-body">
+                        <span>Total Barang:</span>
+                        <br>
+                        <span><?= Count($informasiBarang); ?></span>
+                    </div>
                 </div>
             </div>
             <div class="col-xl-3 col-md-6">
                 <div class="card bg-success text-white mb-4">
-                    <div class="card-body">Total Barang yang Aktif : <?= Count($statusBarang->where(['barang_status' => '1'])->findAll()); ?></div>
+                    <div class="card-body">
+                        <span>Barang yang Siap Pakai:</span>
+                        <br>
+                        <span><?= Count($statusBarang->where(['barang_status' => '1'])->findAll()); ?></span>
+                    </div>
                 </div>
             </div>
             <div class="col-xl-3 col-md-6">
                 <div class="card bg-warning text-white mb-4">
-                    <div class="card-body">Total Barang yang Sedang Dipinjam : <?= Count($statusBarang->where(['barang_status' => '2'])->findAll()); ?></div>
+                    <div class="card-body">
+                        <span>Barang yang Dipinjam:</span>
+                        <br>
+                        <span><?= Count($statusBarang->where(['barang_status' => '2'])->findAll()); ?></span>
+                    </div>
                 </div>
             </div>
             <div class="col-xl-3 col-md-6">
                 <div class="card bg-danger text-white mb-4">
-                    <div class="card-body">Total Barang yang Tidak Aktif : <?= Count($statusBarang->where(['barang_status' => '0'])->findAll()); ?></div>
+                    <div class="card-body">
+                        <span>Barang dalam Perbaikan:</span>
+                        <br>
+                        <span><?= Count($statusBarang->where(['barang_status' => '0'])->findAll()); ?></span>
+                    </div>
                 </div>
             </div>
         </div>

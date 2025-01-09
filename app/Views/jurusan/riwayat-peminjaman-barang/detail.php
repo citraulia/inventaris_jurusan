@@ -146,7 +146,7 @@ function getBarang($kode)
                                                         <?php elseif ($barang['status_barang'] == 0): ?>
                                                             <span class="badge badge-danger">Ditolak</span>
                                                         <?php else: ?>
-                                                            <?php if (session('user_level') == 1): // Hanya untuk user_level 1 ?>
+                                                            <?php if (session('user_level') == 1): ?>
                                                                 <form action="<?= base_url('jurusan/riwayatpeminjamanbarang/setujuiBarang'); ?>" method="POST">
                                                                     <?= csrf_field(); ?>
                                                                     <input type="hidden" name="transaksi_id" value="<?= $transaksiPeminjaman['transaksi_id']; ?>">

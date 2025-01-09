@@ -4,22 +4,27 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateKepalaBagianTuTable extends Migration
+class CreateKategoriBarangTable extends Migration
 {
     public function up()
     {
         $this->forge->addField([
-            'tu_id' => [
+            'kategori_id' => [
                 'type'           => 'SERIAL',
                 'unsigned'       => true,
             ],
-            'tu_nama' => [
+            'kategori_nama' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 32,
+                'unique'     => true,
+            ],
+            'kategori_slug' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 32,
             ],
-            'tu_nip' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 18,
+            'kategori_keterangan' => [
+                'type' => 'TEXT',
+                'null' => true,
             ],
             'created_at' => [
                 'type'    => 'TIMESTAMP',
@@ -32,12 +37,13 @@ class CreateKepalaBagianTuTable extends Migration
                 'default' => null,
             ],
         ]);
-        $this->forge->addPrimaryKey('tu_id');
-        $this->forge->createTable('kepala_bagian_tu');
+
+        $this->forge->addPrimaryKey('kategori_id');
+        $this->forge->createTable('kategori_barang');
     }
 
     public function down()
     {
-        $this->forge->dropTable('kepala_bagian_tu');
+        $this->forge->dropTable('kategori_barang');
     }
 }

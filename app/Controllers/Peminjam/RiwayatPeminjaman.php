@@ -107,7 +107,7 @@ class RiwayatPeminjaman extends BaseController
     public function printSurat($username, $id)
     {
         $riwayatPeminjaman = $this->transaksiPeminjamanModel->getTransaksi($id);
-        $kumpulanBarang = $this->kumpulanBarangModel->getKumpulanBarang($id);
+        $kumpulanBarang = $this->kumpulanBarangModel->where(['transaksi_fk' => $id, 'status_barang' => 1])->findAll();
         $peminjam = $this->userPeminjamModel->where(['peminjam_username' => $riwayatPeminjaman['peminjam_fk']])->first();
         $kajur = $this->userJurusanModel->where(['user_level' => '1'])->first();
 

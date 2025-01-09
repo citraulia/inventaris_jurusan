@@ -52,51 +52,71 @@ class RiwayatPeminjamanBarang extends BaseController
 
     public function setujui($id)
     {
-        $this->transaksiPeminjamanModel->save([
-            'transaksi_id' => $id,
-            'jurusan_fk' => session('username'),
-            'pengajuan_status' => 1,
-            'peminjaman_status' => 1,
-        ]);
-
+        // Ambil semua barang yang terkait dengan transaksi
         $kumpulanBarang = $this->kumpulanBarangModel->getKumpulanBarang($id);
+
+        // Loop melalui barang-barang untuk menyetujui yang belum ditolak
         foreach ($kumpulanBarang as $barangPinjaman) {
+            if ($barangPinjaman['status_barang'] == 0) {
+                // Lewati barang yang sudah ditolak
+                continue;
+            }
+
+            // Perbarui status barang menjadi disetujui
+            $this->kumpulanBarangModel->where([
+                'barang_dipinjam_fk' => $barangPinjaman['barang_dipinjam_fk'],
+                'transaksi_fk' => $id
+            ])->set(['status_barang' => 1])->update();
+
+            // Perbarui status barang di tabel informasi barang
             $barang = $this->informasiBarangModel->getInformasiBarang($barangPinjaman['barang_dipinjam_fk']);
             $this->informasiBarangModel->save([
                 'barang_id' => $barang['barang_id'],
-                'barang_status' => 2,
-                'barang_dipinjamkan' => 0,
+                'barang_status' => 2, // Status disetujui
+                'barang_dipinjamkan' => 0, // Tidak tersedia untuk dipinjam lagi
             ]);
         }
 
-        session()->setFlashdata('pesan', "Pengajuan Peminjaman Barang berhasil disetujui.");
+        // Perbarui status transaksi berdasarkan barang
+        $this->updateTransaksiStatus($id);
 
+        session()->setFlashdata('pesan', "Barang yang belum ditolak berhasil disetujui.");
         return redirect()->to("jurusan/peminjaman");
     }
 
     public function tolak($id)
     {
-        $this->transaksiPeminjamanModel->save([
-            'transaksi_id' => $id,
-            'jurusan_fk' => session('username'),
-            'pengajuan_status' => 0,
-            'peminjaman_status' => -1,
-        ]);
-
+        // Ambil semua barang yang terkait dengan transaksi
         $kumpulanBarang = $this->kumpulanBarangModel->getKumpulanBarang($id);
+    
+        // Loop melalui barang-barang untuk menolak yang belum disetujui
         foreach ($kumpulanBarang as $barangPinjaman) {
+            if ($barangPinjaman['status_barang'] == 1) {
+                // Lewati barang yang sudah disetujui
+                continue;
+            }
+    
+            // Perbarui status barang menjadi ditolak
+            $this->kumpulanBarangModel->where([
+                'barang_dipinjam_fk' => $barangPinjaman['barang_dipinjam_fk'],
+                'transaksi_fk' => $id
+            ])->set(['status_barang' => 0])->update();
+    
+            // Perbarui status barang di tabel informasi barang
             $barang = $this->informasiBarangModel->getInformasiBarang($barangPinjaman['barang_dipinjam_fk']);
             $this->informasiBarangModel->save([
                 'barang_id' => $barang['barang_id'],
-                'barang_status' => 1,
-                'barang_dipinjamkan' => 1,
+                'barang_status' => 1, // Status tersedia
+                'barang_dipinjamkan' => 1, // Tersedia untuk dipinjam lagi
             ]);
         }
-
-        session()->setFlashdata('pesan', "Pengajuan Peminjaman Barang Ditolak.");
-
+    
+        // Perbarui status transaksi berdasarkan barang
+        $this->updateTransaksiStatus($id);
+    
+        session()->setFlashdata('pesan', "Barang yang belum disetujui berhasil ditolak.");
         return redirect()->to("jurusan/peminjaman");
-    }
+    }    
 
     public function setujuiBarang()
     {
@@ -104,18 +124,13 @@ class RiwayatPeminjamanBarang extends BaseController
         $barangId = $this->request->getPost('barang_id');
 
         if (!$transaksiId || !$barangId) {
-            log_message('error', 'Data tidak valid: Transaksi ID atau Barang ID kosong');
             return redirect()->back()->with('pesan', 'Data tidak valid!');
         }
-
-        log_message('info', "Setujui Barang: Transaksi ID = $transaksiId, Barang ID = $barangId");
         
-        // Perbarui status barang dalam transaksi
         $this->kumpulanBarangModel->where(['barang_dipinjam_fk' => $barangId, 'transaksi_fk' => $transaksiId])
-                                ->set(['status_barang' => 1]) // 1 berarti "Disetujui"
+                                ->set(['status_barang' => 1])
                                 ->update();
         
-        // Cek status global transaksi
         $this->updateTransaksiStatus($transaksiId);
 
         session()->setFlashdata('pesan', "Barang berhasil disetujui.");
@@ -131,20 +146,17 @@ class RiwayatPeminjamanBarang extends BaseController
             return redirect()->back()->with('pesan', 'Data tidak valid!');
         }
 
-        // Perbarui status barang dalam transaksi
         $this->kumpulanBarangModel->where(['barang_dipinjam_fk' => $barangId, 'transaksi_fk' => $transaksiId])
-                                ->set(['status_barang' => 0]) // 0 berarti "Ditolak"
+                                ->set(['status_barang' => 0])
                                 ->update();
 
-        // Perbarui informasi barang untuk mengembalikan ketersediaan
         $barang = $this->informasiBarangModel->where('barang_kode', $barangId)->first();
         $this->informasiBarangModel->save([
             'barang_id' => $barang['barang_id'],
-            'barang_status' => 1, // 1 berarti "Tersedia"
-            'barang_dipinjamkan' => 1, // 1 berarti "Dapat Dipinjamkan"
+            'barang_status' => 1,
+            'barang_dipinjamkan' => 1,
         ]);
 
-        // Cek status global transaksi
         $this->updateTransaksiStatus($transaksiId);
 
         session()->setFlashdata('pesan', "Barang berhasil ditolak.");
@@ -153,40 +165,39 @@ class RiwayatPeminjamanBarang extends BaseController
 
     private function updateTransaksiStatus($transaksiId)
     {
+        // Ambil semua barang terkait transaksi
         $barangStatuses = $this->kumpulanBarangModel->where('transaksi_fk', $transaksiId)->findAll();
     
-        $isAnyApproved = false;
-        $isAnyPending = false;
-        $isAllRejected = true;
+        $isAnyApproved = false; // Ada barang yang disetujui
+        $isAnyPending = false;  // Ada barang yang pending
+        $isAllRejected = true;  // Semua barang ditolak
     
         foreach ($barangStatuses as $barang) {
             if ($barang['status_barang'] == 1) {
                 $isAnyApproved = true;
                 $isAllRejected = false;
-            } elseif (!isset($barang['status_barang']) || $barang['status_barang'] == 2) { // 2: Pending
+            } elseif (!isset($barang['status_barang']) || $barang['status_barang'] == 2) {
                 $isAnyPending = true;
                 $isAllRejected = false;
-            } elseif ($barang['status_barang'] == 0) { // Barang ditolak
-                // Tetap lanjut, hanya periksa jika semuanya ditolak
+            } elseif ($barang['status_barang'] == 0) {
+                // Barang ditolak
+                $isAllRejected = $isAllRejected && true;
             }
         }
-
-        log_message('info', "isAnyApproved: $isAnyApproved, isAnyPending: $isAnyPending, isAllRejected: $isAllRejected");
     
-        // Logika Status Global
+        // Tentukan status transaksi berdasarkan kondisi barang
         if ($isAllRejected) {
-            $pengajuanStatus = 0; // Ditolak
-            $peminjamanStatus = -1; // Tidak Dipinjam
+            $pengajuanStatus = 0; // Semua barang ditolak
+            $peminjamanStatus = -1; // Tidak dipinjam
         } elseif ($isAnyPending) {
-            $pengajuanStatus = 2; // Pending
-            $peminjamanStatus = 2; // Pending
+            $pengajuanStatus = 2; // Masih ada barang yang pending
+            $peminjamanStatus = 2; // Status pending
         } elseif ($isAnyApproved) {
-            $pengajuanStatus = 1; // Disetujui
-            $peminjamanStatus = 1; // Sedang Dipinjam
+            $pengajuanStatus = 1; // Barang disetujui
+            $peminjamanStatus = 1; // Sedang dipinjam
         }
-
-        log_message('info', "Updated pengajuan_status: $pengajuanStatus, peminjaman_status: $peminjamanStatus");
     
+        // Perbarui status transaksi
         $this->transaksiPeminjamanModel->save([
             'transaksi_id' => $transaksiId,
             'pengajuan_status' => $pengajuanStatus,
