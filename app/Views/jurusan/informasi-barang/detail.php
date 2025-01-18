@@ -37,6 +37,12 @@ $lokasi = $lokasiBarang->where(['lokasi_kode' => $informasiBarang['lokasi_fk']])
             <div class=" card-header">Detail dari <?= $informasiBarang['barang_nama']; ?></div>
             <div class="card-body text-dark">
                 <form>
+                    <div class="form-group">
+                        <label for="kode">QR Code</label>
+                        <div>
+                            <img src="<?= $qrCodeUrl; ?>" alt="QR Code" style="width: 150px; height: 150px;">
+                        </div>
+                    </div>
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="kode">Kode Barang</label>
@@ -104,13 +110,18 @@ $lokasi = $lokasiBarang->where(['lokasi_kode' => $informasiBarang['lokasi_fk']])
                 </form>
                 <?php if ($status != 'INACTIVE') : ?>
                     <?php if (allow('3')) : ?>
+                        <!-- Tombol Print QR -->
+                        <a href="<?= base_url('jurusan/informasibarang/printqr/' . $informasiBarang['qrcode']); ?>" class="btn btn-primary mt-lg-2" target="_blank">
+                            <i class="fas fa-print mr-3"></i>Print QR
+                        </a>
+                        <!-- Tombol Edit Barang -->
                         <a href="<?= base_url('jurusan/informasibarang/edit/' . $informasiBarang['barang_kode']); ?>" class="btn btn-warning mt-lg-2"><i class="fas fa-pen mr-3"></i>Edit</a>
 
                         <?php if ($status != 'SEDANG DIPINJAM') : ?>
-                            <button type="button" class="btn btn-danger mt-lg-2" data-toggle="modal" data-target="#editModal"><i class="fas fa-times mr-3"></i>Delete Barang</button>
+                            <button type="button" class="btn btn-danger mt-lg-2" data-toggle="modal" data-target="#editModal"><i class="fas fa-times mr-3"></i>Hapus Barang</button>
 
                             <?php if ($fotoBarang) : ?>
-                                <a href="<?= base_url('jurusan/informasibarang/foto/' . $informasiBarang['barang_kode']); ?>" class="btn btn-danger mt-lg-2"><i class="fas fa-image mr-3"></i>Delete Foto Barang</a>
+                                <a href="<?= base_url('jurusan/informasibarang/foto/' . $informasiBarang['barang_kode']); ?>" class="btn btn-danger mt-lg-2"><i class="fas fa-image mr-3"></i>Hapus Foto Barang</a>
                             <?php endif; ?>
                         <?php endif; ?>
                     <?php endif; ?>

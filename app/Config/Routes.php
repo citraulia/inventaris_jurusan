@@ -71,6 +71,7 @@ $routes->get('jurusan/lokasibarang/(:any)', 'Jurusan\LokasiBarang::detail/$1');
 // Informasi Barang Menu
 $routes->get('jurusan/informasibarang', "Jurusan\InformasiBarang::index");
 $routes->get('jurusan/informasibarang/create', 'Jurusan\InformasiBarang::create');
+$routes->get('/jurusan/informasibarang/printqr/(:any)', 'Jurusan\InformasiBarang::printQR/$1');
 $routes->get('jurusan/informasibarang/edit/(:segment)', 'Jurusan\InformasiBarang::edit/$1');
 $routes->delete('jurusan/informasibarang/(:num)', 'Jurusan\InformasiBarang::delete/$1');
 $routes->get('jurusan/informasibarang/foto/(:segment)', 'Jurusan\InformasiBarang::deleteImgPage/$1');
