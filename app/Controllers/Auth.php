@@ -21,7 +21,7 @@ class Auth extends BaseController
         $row = $this->authModel->getLoginData($username, $table);
         if ($row == null) {
             session()->setFlashdata('gagal', 'Username atau Password anda salah.');
-            return redirect()->to("/");
+            return redirect()->to("/login");
         }
 
         if ($password == $row->peminjam_password) {
@@ -39,7 +39,7 @@ class Auth extends BaseController
         }
 
         session()->setFlashdata('gagal', 'Username atau Password anda salah.');
-        return redirect()->to("/");
+        return redirect()->to("/login");
     }
 
     public function loginJurusan()
