@@ -26,7 +26,7 @@ class RiwayatPengelolaanBarang extends BaseController
     protected $fotoPendingModel;
 
     //Others
-    protected $lokasiBarang;
+    protected $lokasiBarangModel;
 
     public function __construct()
     {
@@ -103,12 +103,22 @@ class RiwayatPengelolaanBarang extends BaseController
         $pengelolaanBarang = $this->pengelolaanModel->getPengelolaan($kodePengelolaan);
         $barangPending = $this->barangPendingModel->getBarangPending($pengelolaanBarang['pending_fk']);
 
-        $this->pengelolaanModel->save([
-            'pengelolaan_id' => $this->request->getVar('id'),
-            'pengelolaan_status' => '1',
+        $this->pengelolaanModel->update($pengelolaanBarang['pengelolaan_id'], [
+            'pengelolaan_status' => 1, // Status disetujui
+            'pengelolaan_tanggal' => date('Y-m-d'), // Tanggal persetujuan
+            'user_fk' => session('username'), // User yang menyetujui
         ]);
 
         if ($pengelolaanBarang['jenis_fk'] == 'TAMBAH') {
+            // Buat kode Barang terlebih dahulu
+            $barangID = $this->informasiBarangModel->getInsertID(); // ID Barang setelah save
+            $createKodeBarang = $this->informasiBarangModel->createKode(
+                $barangPending['kategori_fk'], 
+                $barangPending['lokasi_fk'], 
+                $barangPending['pending_nama'], 
+                $barangID
+            );
+            $kodeBarang = url_title($createKodeBarang, '-', true);
 
             $this->informasiBarangModel->save([
                 'barang_nama' => $barangPending['pending_nama'],
@@ -122,15 +132,6 @@ class RiwayatPengelolaanBarang extends BaseController
                 'barang_keterangan' => $barangPending['pending_keterangan'],
                 'barang_status' => $barangPending['pending_status'],
                 'barang_dipinjamkan' => $barangPending['pending_dipinjamkan'],
-            ]);
-
-            //Buat kode Barang
-            $barangID = $this->informasiBarangModel->getInsertID();
-            $createKodeBarang = $this->informasiBarangModel->createKode($barangPending['kategori_fk'], $barangPending['lokasi_fk'], $barangPending['pending_nama'], $barangID);
-            $kodeBarang = url_title($createKodeBarang, '-', true);
-
-            $this->informasiBarangModel->save([
-                'barang_id' => $barangID,
                 'barang_kode' => $kodeBarang,
             ]);
 
