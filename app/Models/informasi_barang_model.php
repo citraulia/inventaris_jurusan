@@ -33,11 +33,17 @@ class informasi_barang_model extends Model
 
     public function createKode($kategori, $lokasi, $barang, $id)
     {
+        if ($id <= 0) {
+            $lastItem = $this->orderBy('barang_id', 'DESC')->first();
+            $id = ($lastItem) ? $lastItem['barang_id'] + 1 : 1;
+        }
+    
         $kategoriNama = substr($kategori, 0, 3);
         $lokasiNama = trim($lokasi, "R.");
-        $barangNama = substr($barang, 0, 2) . $id;
-        $kode = $kategoriNama . $lokasiNama . $barangNama;
-
+        $barangNama = substr($barang, 0, 2);
+    
+        $kode = strtoupper($kategoriNama) . strtoupper($lokasiNama) . strtoupper($barangNama) . $id;
+    
         return $kode;
-    }
+    }    
 }
