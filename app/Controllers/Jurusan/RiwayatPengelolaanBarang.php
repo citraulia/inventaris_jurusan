@@ -217,25 +217,51 @@ class RiwayatPengelolaanBarang extends BaseController
     {
         $pengelolaanBarang = $this->pengelolaanModel->getPengelolaan($kodePengelolaan);
         $barangPending = $this->barangPendingModel->getBarangPending($pengelolaanBarang['pending_fk']);
-
+    
+        // Jika jenis pengelolaan adalah "UBAH", cari barang asli dan ubah statusnya kembali ke active
+        if ($pengelolaanBarang['jenis_fk'] == 'UBAH') {
+            $barangOri = $this->informasiBarangModel->where('barang_kode', $pengelolaanBarang['barang_fk'])->first();
+    
+            // Update status barang menjadi active tanpa mengubah informasi lainnya
+            $this->informasiBarangModel->update($barangOri['barang_id'], [
+                'barang_status' => 1,
+                'barang_dipinjamkan' => 0,
+            ]);
+        }
+    
+        // Jika jenis pengelolaan adalah "HAPUS", ubah status barang menjadi active
+        if ($pengelolaanBarang['jenis_fk'] == 'HAPUS') {
+            $barangOri = $this->informasiBarangModel->where('barang_kode', $pengelolaanBarang['barang_fk'])->first();
+    
+            // Update status barang menjadi active tanpa mengubah informasi lainnya
+            $this->informasiBarangModel->update($barangOri['barang_id'], [
+                'barang_status' => 1,
+                'barang_dipinjamkan' => 0,
+            ]);
+        }
+    
+        // Hapus foto barang yang ada pada tabel pending
+        $fotoBarang = $this->fotoPendingModel->getFoto($barangPending['pending_kode']);
+        if ($fotoBarang) {
+            foreach ($fotoBarang as $foto) {
+                $fotoNama = $foto['foto_pending_nama'];
+    
+                if (file_exists('img/' . $fotoNama)) {
+                    unlink('img/' . $fotoNama);
+                }
+    
+                $this->fotoPendingModel->delete($foto['foto_pending_id']);
+            }
+        }
+    
+        // Update status pengelolaan menjadi ditolak
         $this->pengelolaanModel->save([
             'pengelolaan_id' => $this->request->getVar('id'),
             'pengelolaan_status' => 0,
             'pengelolaan_keterangan' => $this->request->getVar('keterangan'),
         ]);
-
-        //Hapus foto barang yang tertolak
-        $fotoBarang = $this->fotoPendingModel->getFoto($barangPending['pending_kode']);
-        foreach ($fotoBarang as $foto) {
-            $fotoNama = $foto['foto_pending_nama'];
-
-            unlink('img/' . $fotoNama);
-
-            $this->fotoPendingModel->delete($foto['foto_pending_id']);
-        }
-
-        session()->setFlashdata('tolak', "Pengajuan data dengan kode pengelolaan " . $kodePengelolaan . " ditolak.");
-
+    
+        session()->setFlashdata('tolak', "Pengajuan data dengan kode pengelolaan " . $kodePengelolaan . " telah ditolak.");
         return redirect()->to("/jurusan/riwayatpengelolaanbarang");
     }
 }
