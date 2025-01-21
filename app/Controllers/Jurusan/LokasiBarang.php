@@ -12,7 +12,7 @@ use FPDF;
 
 class LokasiBarang extends BaseController
 {
-    protected $lokasiBarang;
+    protected $lokasiBarangModel;
     protected $kepalaBagianTUModel;
 
     protected $informasiBarangModel;
