@@ -11,6 +11,8 @@ use App\Models\jenis_pengelolaan_model;
 use App\Models\kategori_barang_model;
 use App\Models\lokasi_barang_model;
 use App\Models\pengelolaan_barang_model;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
 use CodeIgniter\HTTP\Files\UploadedFile;
 
 class InformasiBarang extends BaseController
@@ -35,7 +37,6 @@ class InformasiBarang extends BaseController
             echo 'Access denied.';
             exit;
         }
-
 
         $this->informasiBarangModel = new informasi_barang_model();
         $this->fotoBarangModel = new foto_barang_model();
@@ -62,20 +63,83 @@ class InformasiBarang extends BaseController
 
     public function detail($kode)
     {
-        $data = [
-            'title' => 'Informasi Barang | Detail Barang',
-            'informasiBarang' => $this->informasiBarangModel->getInformasiBarang($kode),
-            'lokasiBarang' => $this->lokasiBarangModel,
-            'fotoBarang' => $this->fotoBarangModel->getFoto($kode),
-        ];
-
-        // Jika user tidak ditemukan
-        if (empty($data['informasiBarang'])) {
+        $informasiBarang = $this->informasiBarangModel->getInformasiBarang($kode);
+    
+        if (empty($informasiBarang)) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Barang dengan kode ' . $kode . ' tidak ditemukan.');
         }
-
+    
+        $informasiBarang['qrcode'] = $kode;
+        $qrData = base_url('jurusan/informasibarang/detail/' . $kode);
+    
+        $options = new QROptions([
+            'version'    => 5,
+            'outputType' => QRCode::OUTPUT_IMAGE_PNG,
+            'eccLevel'   => QRCode::ECC_L,
+        ]);
+    
+        $qrcode = new QRCode($options);
+        $qrCodeUrl = $qrcode->render($qrData);
+    
+        $data = [
+            'title' => 'Informasi Barang | Detail Barang',
+            'informasiBarang' => $informasiBarang,
+            'lokasiBarang' => $this->lokasiBarangModel,
+            'fotoBarang' => $this->fotoBarangModel->getFoto($kode),
+            'qrCodeUrl' => $qrCodeUrl,
+        ];
+    
         return view('jurusan/informasi-barang/detail', $data);
     }
+    
+
+    public function printQR($kode)
+    {
+        $barang = $this->informasiBarangModel->where('barang_kode', $kode)->first();
+    
+        if (!$barang) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Barang tidak ditemukan.');
+        }
+    
+        $qrData = base_url('jurusan/informasibarang/detail/' . $kode);
+    
+        $options = new \chillerlan\QRCode\QROptions([
+            'version'    => 5,
+            'outputType' => QRCode::OUTPUT_IMAGE_PNG,
+            'eccLevel'   => QRCode::ECC_L,
+            'scale'      => 10,
+            'imageBase64' => false
+        ]);
+    
+        $qrcode = new \chillerlan\QRCode\QRCode($options);
+        $qrImagePath = WRITEPATH . 'uploads/' . $kode . '_qrcode.png';
+    
+        try {
+            $qrCodeData = $qrcode->render($qrData);
+        
+            file_put_contents($qrImagePath, $qrCodeData);
+        } catch (\Exception $e) {
+            log_message('error', 'Gagal membuat QR Code: ' . $e->getMessage());
+            return;
+        }        
+    
+        $pdf = new \FPDF();
+        $pdf->AddPage();
+        $pdf->SetFont('Arial', 'B', 16);
+    
+        $pdf->Cell(0, 10, 'QR Code untuk Barang:', 0, 1, 'C');
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(0, 10, $barang['barang_nama'], 0, 1, 'C');
+    
+        ob_clean();
+        $pdf->Image($qrImagePath, ($pdf->GetPageWidth() - 50) / 2, $pdf->GetY(), 50, 50);
+    
+        unlink($qrImagePath);
+    
+        $pdf->Output();
+        exit();
+    }
+    
 
     public function create()
     {
@@ -91,6 +155,9 @@ class InformasiBarang extends BaseController
 
     public function save()
     {
+        log_message('info', 'Request POST data: ' . json_encode($this->request->getPost()));
+        log_message('info', 'Request FILE data: ' . json_encode($this->request->getFiles()));
+
         $jenisPengelolaan = $this->jenisPengelolaanModel->where(['jenis_nama' => 'TAMBAH'])->findAll();
 
         // Validasi input
@@ -105,10 +172,27 @@ class InformasiBarang extends BaseController
             //'harga' => 'required',
             //'keterangan' => 'required',
             'dipinjamkan' => 'required',
-            'foto' => 'uploaded[foto]|is_image[foto]|mime_in[foto,image/jpg,image/jpeg,image/png]'
+            'foto' => [
+                'rules' => 'uploaded[foto]|is_image[foto]|mime_in[foto,image/jpg,image/jpeg,image/png]',
+                'errors' => [
+                    'uploaded' => 'File harus diunggah.',
+                    'is_image' => 'File harus berupa gambar.',
+                    'mime_in' => 'Format file harus jpg, jpeg, atau png.',
+                ],
+            ]
         ])) {
+            log_message('error', 'Validasi gagal: ' . json_encode($this->validator->getErrors()));
             return redirect()->to('/jurusan/informasibarang/create')->withInput();
         }
+
+        // Buat kode barang pending
+        $idPending = $this->barangPendingModel->getInsertID();
+        $kodePending = $this->barangPendingModel->createKode(
+            $this->request->getVar('kategori'),
+            $this->request->getVar('lokasi'),
+            $this->request->getVar('nama'),
+            $idPending
+        );
 
         // Insert barang pending
         $this->barangPendingModel->save([
@@ -122,15 +206,6 @@ class InformasiBarang extends BaseController
             'lokasi_fk' => $this->request->getVar('lokasi'),
             'pending_keterangan' => $this->request->getVar('keterangan'),
             'pending_dipinjamkan' => $this->request->getVar('dipinjamkan'),
-        ]);
-
-        // Buat kode barang pending
-        $idPending = $this->barangPendingModel->getInsertID();
-        $createKodePending = $this->barangPendingModel->createKode($this->request->getVar('kategori'), $this->request->getVar('lokasi'), $this->request->getVar('nama'), $idPending);
-        $kodePending = url_title($createKodePending, '-', true);
-
-        $this->barangPendingModel->save([
-            'pending_id' => $idPending,
             'pending_kode' => $kodePending,
         ]);
 
@@ -149,6 +224,7 @@ class InformasiBarang extends BaseController
 
         //Ambil foto dan namanya
         if ($this->request->getFileMultiple('foto')) {
+            log_message('info', 'File diterima: ' . json_encode($this->request->getFileMultiple('foto')));
             foreach ($this->request->getFileMultiple('foto') as $fileFoto) {
                 $fileFoto->move('img');
 
@@ -158,6 +234,9 @@ class InformasiBarang extends BaseController
                     'foto_pending_nama' => $fotoNama,
                 ]);
             }
+        } else {
+            // Tambahkan log jika file tidak ditemukan
+            log_message('error', 'Tidak ada file yang diterima.');
         }
 
         session()->setFlashdata('pesan', 'Penambahan data "' . $this->request->getVar('nama') . '" berhasil diajukan.');
@@ -217,6 +296,15 @@ class InformasiBarang extends BaseController
             }
         }
 
+        // Buat kode barang pending
+        $idPending = $this->barangPendingModel->getInsertID();
+        $kodePending = $this->barangPendingModel->createKode(
+            $this->request->getVar('kategori'),
+            $this->request->getVar('lokasi'),
+            $this->request->getVar('nama'),
+            $idPending
+        );
+
         // Insert barang pending
         $this->barangPendingModel->save([
             'pending_nama' => $this->request->getVar('nama'),
@@ -229,18 +317,9 @@ class InformasiBarang extends BaseController
             'lokasi_fk' => $this->request->getVar('lokasi'),
             'pending_keterangan' => $this->request->getVar('keterangan'),
             'pending_dipinjamkan' => $this->request->getVar('dipinjamkan'),
-        ]);
-
-        // Buat kode barang pending
-        $idPending = $this->barangPendingModel->getInsertID();
-        $createKodePending = $this->barangPendingModel->createKode($this->request->getVar('kategori'), $this->request->getVar('lokasi'), $this->request->getVar('nama'), $idPending);
-        $kodePending = url_title($createKodePending, '-', true);
-
-        $this->barangPendingModel->save([
-            'pending_id' => $idPending,
             'pending_kode' => $kodePending,
         ]);
-
+        
         // Buat kode pengelolaan
         $createKodePengelolaan = $this->pengelolaanModel->createKode($jenisPengelolaan[0]['jenis_nama'], $kodePending);
         $kodePengelolaan = url_title($createKodePengelolaan, '-', true);
@@ -315,68 +394,93 @@ class InformasiBarang extends BaseController
 
     public function delete($id)
     {
-        $jenisPengelolaan = $this->jenisPengelolaanModel->where(['jenis_nama' => 'HAPUS'])->findAll();
+        $jenisPengelolaan = $this->jenisPengelolaanModel->where(['jenis_nama' => 'HAPUS'])->first();
         $barangOriginal = $this->informasiBarangModel->getInformasiBarang($this->request->getVar('kode'));
-
-        // Insert barang pending
-        $this->barangPendingModel->save([
-            'pending_nama' => $barangOriginal['barang_nama'],
-            'kategori_fk' => $barangOriginal['kategori_fk'],
-            'pending_merk' => $barangOriginal['barang_merk'],
-            'pending_deskripsi' => $barangOriginal['barang_deskripsi'],
-            'pending_tahun_perolehan' => $barangOriginal['barang_tahun_perolehan'],
-            'pending_keadaan' => $barangOriginal['barang_keadaan'],
-            'pending_harga' => $barangOriginal['barang_harga'],
-            'lokasi_fk' => $barangOriginal['lokasi_fk'],
-            'pending_keterangan' => $barangOriginal['barang_keterangan'],
-            'pending_status' => 0,
-            'pending_dipinjamkan' => 0,
-        ]);
-
-        // Buat kode barang pending
-        $idPending = $this->barangPendingModel->getInsertID();
-        $createKodePending = $this->barangPendingModel->createKode($barangOriginal['kategori_fk'], $barangOriginal['lokasi_fk'], $barangOriginal['barang_nama'], $idPending);
-        $kodePending = url_title($createKodePending, '-', true);
-
-        $this->barangPendingModel->save([
-            'pending_id' => $idPending,
-            'pending_kode' => $kodePending,
-        ]);
-
+    
+        if (!$barangOriginal) {
+            return redirect()->back()->with('error', 'Barang tidak ditemukan.');
+        }
+    
+        // Cek apakah data sudah ada di informasi_barang_pending
+        $existingPending = $this->barangPendingModel->where('pending_nama', $barangOriginal['barang_nama'])->first();
+    
+        if ($existingPending) {
+            // Jika data sudah ada, gunakan pending_kode yang ada
+            $kodePending = $existingPending['pending_kode'];
+        } else {
+            // Jika data belum ada, buat entri baru
+            $this->barangPendingModel->save([
+                'pending_nama' => $barangOriginal['barang_nama'],
+                'kategori_fk' => $barangOriginal['kategori_fk'],
+                'pending_merk' => $barangOriginal['barang_merk'],
+                'pending_deskripsi' => $barangOriginal['barang_deskripsi'],
+                'pending_tahun_perolehan' => $barangOriginal['barang_tahun_perolehan'],
+                'pending_keadaan' => $barangOriginal['barang_keadaan'],
+                'pending_harga' => $barangOriginal['barang_harga'],
+                'lokasi_fk' => $barangOriginal['lokasi_fk'],
+                'pending_keterangan' => $barangOriginal['barang_keterangan'],
+                'pending_status' => 0,
+                'pending_dipinjamkan' => 0,
+            ]);
+    
+            // Ambil ID dari data baru
+            $idPending = $this->barangPendingModel->getInsertID();
+            if (!$idPending) {
+                log_message('error', 'Gagal mendapatkan ID dari informasi_barang_pending.');
+                return redirect()->back()->with('error', 'Gagal menyimpan data pending.');
+            }
+    
+            // Buat kode pending
+            $createKodePending = $this->barangPendingModel->createKode(
+                $barangOriginal['kategori_fk'],
+                $barangOriginal['lokasi_fk'],
+                $barangOriginal['barang_nama'],
+                $idPending
+            );
+    
+            // Simpan kode pending baru
+            $kodePending = url_title($createKodePending, '-', true);
+            $this->barangPendingModel->save([
+                'pending_id' => $idPending,
+                'pending_kode' => $kodePending,
+            ]);
+        }
+    
         // Buat kode pengelolaan
-        $createKodePengelolaan = $this->pengelolaanModel->createKode($jenisPengelolaan[0]['jenis_nama'], $kodePending);
+        $createKodePengelolaan = $this->pengelolaanModel->createKode($jenisPengelolaan['jenis_nama'], $kodePending);
         $kodePengelolaan = url_title($createKodePengelolaan, '-', true);
-
-        // Insert Kode Barang Pending dan Pengelolaan
+    
+        // Insert data ke tabel pengelolaan_barang
         $this->pengelolaanModel->save([
             'pengelolaan_kode' => $kodePengelolaan,
             'barang_fk' => $barangOriginal['barang_kode'],
             'pending_fk' => $kodePending,
             'user_fk' => session('username'),
             'pengelolaan_tanggal' => date("Y-m-d"),
-            'jenis_fk' => $jenisPengelolaan[0]['jenis_nama'],
-            'pengelolaan_keterangan' => $this->request->getVar('keteranganPenghapusan')
+            'jenis_fk' => $jenisPengelolaan['jenis_nama'],
+            'pengelolaan_keterangan' => $this->request->getVar('keteranganPenghapusan'),
         ]);
-
-        //Pindahkan Foto
+    
+        // Pindahkan Foto
         $fotoOriginal = $this->fotoBarangModel->getFoto($barangOriginal['barang_kode']);
         if ($fotoOriginal) {
             foreach ($fotoOriginal as $foto) {
-                $fotoNama = $foto['foto_nama'];
                 $this->fotoPendingModel->save([
                     'pending_fk' => $kodePending,
-                    'foto_pending_nama' => $fotoNama,
+                    'foto_pending_nama' => $foto['foto_nama'],
                 ]);
             }
         }
-
+    
+        // Update status barang di tabel informasi_barang
         $this->informasiBarangModel->save([
             'barang_id' => $id,
             'barang_status' => 0,
         ]);
-
+    
         session()->setFlashdata('pesan', 'Penghapusan data "' . $barangOriginal['barang_nama'] . '" berhasil diajukan.');
-
+    
         return redirect()->to("/jurusan/riwayatpengelolaanbarang");
     }
+    
 }
