@@ -14,7 +14,7 @@
                     <div class="card-body">
                         <span>Total Barang:</span>
                         <br>
-                        <span><?= Count($informasiBarang); ?></span>
+                        <span><?= Count($statusBarang->where('barang_status !=', 0)->findAll()); ?></span>
                     </div>
                 </div>
             </div>
@@ -39,9 +39,9 @@
             <div class="col-xl-3 col-md-6">
                 <div class="card bg-danger text-white mb-4">
                     <div class="card-body">
-                        <span>Barang dalam Perbaikan:</span>
+                        <span>Barang Tidak aktif:</span>
                         <br>
-                        <span><?= Count($statusBarang->where(['barang_status' => '0'])->findAll()); ?></span>
+                        <span><?= Count($statusBarang->whereIn('barang_status', [3, 4])->findAll()); ?></span>
                     </div>
                 </div>
             </div>
@@ -118,17 +118,25 @@
                                         <?php if ($barang['barang_status'] == 1) {
                                             echo 'bg-success';
                                         } else if ($barang['barang_status'] == 0) {
-                                            echo 'bg-danger';
+                                            echo 'bg-secondary'; // Tidak akan ditampilkan karena disembunyikan
                                         } else if ($barang['barang_status'] == 2) {
                                             echo 'bg-warning';
+                                        } else if ($barang['barang_status'] == 3) {
+                                            echo 'bg-primary'; // Pending
+                                        } else if ($barang['barang_status'] == 4) {
+                                            echo 'bg-danger'; // Sedang Perbaikan
                                         } ?>
                                     ">
                                         <?php if ($barang['barang_status'] == 1) {
                                             echo '<b>ACTIVE</b>';
                                         } else if ($barang['barang_status'] == 0) {
-                                            echo '<b>INACTIVE</b>';
+                                            echo '<b>DIHAPUS</b>'; // Tidak akan ditampilkan
                                         } else if ($barang['barang_status'] == 2) {
                                             echo '<b>SEDANG DIPINJAM</b>';
+                                        } else if ($barang['barang_status'] == 3) {
+                                            echo '<b>PENDING</b>';
+                                        } else if ($barang['barang_status'] == 4) {
+                                            echo '<b>SEDANG PERBAIKAN</b>';
                                         } ?>
                                     </td>
                                     <td>

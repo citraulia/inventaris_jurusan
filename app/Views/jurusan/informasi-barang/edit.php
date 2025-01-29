@@ -2,10 +2,15 @@
 <?php if ($informasiBarang['barang_status'] == 1) {
     $status = 'ACTIVE';
 } else if ($informasiBarang['barang_status'] == 0) {
-    $status = 'INACTIVE';
+    $status = 'DIHAPUS';
 } else if ($informasiBarang['barang_status'] == 2) {
     $status = 'SEDANG DIPINJAM';
-} ?>
+} else if ($informasiBarang['barang_status'] == 3) {
+    $status = 'PENDING';
+} else if ($informasiBarang['barang_status'] == 4) {
+    $status = 'SEDANG PERBAIKAN';
+}
+?>
 <!-- Get nama Barang Status selesai -->
 
 <!-- Get Status Peminjaman Barang -->
@@ -125,10 +130,8 @@
                                     <option <?= ($informasiBarang['barang_dipinjamkan'] == '0') ? 'selected' : ''; ?> value="0">Tidak Dipinjamkan</option>
                                     <option <?= ($informasiBarang['barang_dipinjamkan'] == '1') ? 'selected' : ''; ?> value="1">Boleh Dipinjamkan</option>
                                 </select>
-                            <?php endif; ?>
-
-                            <?php if ($informasiBarang['barang_status'] == 0 || $informasiBarang['barang_status'] == 2) : ?>
-                                <input type="text" class="form-control" id="dipinjamkan" name="dipinjamkan" style="font-weight: bold;" value="<?= $informasiBarang['barang_dipinjamkan']; ?>" readonly />
+                            <?php else: ?>
+                                <input type="text" class="form-control" id="dipinjamkan" name="dipinjamkan" style="font-weight: bold;" value="TIDAK DIPINJAMKAN" readonly />
                             <?php endif; ?>
 
                             <div id="dipinjamkanFeedback" class="invalid-feedback">

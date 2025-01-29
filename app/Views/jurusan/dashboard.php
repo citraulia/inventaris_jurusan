@@ -55,7 +55,7 @@ function getLevel($jenis)
                     <div class="card-body">
                         <span>Total Barang:</span>
                         <br> 
-                        <span><?= Count($barangOri->findAll()); ?></span>
+                        <span><?= Count($barangOri->where('barang_status !=', 0)->findAll()); ?></span>
                     </div>
                 </div>
             </div>
@@ -80,9 +80,9 @@ function getLevel($jenis)
             <div class="col-xl-3 col-md-6">
                 <div class="card bg-danger text-white mb-4">
                     <div class="card-body">
-                        <span>Barang dalam Perbaikan:</span>
+                        <span>Barang Tidak Aktif:</span>
                         <br> 
-                        <span><?= Count($barangOri->where(['barang_status' => '0'])->findAll()); ?></span>
+                        <span><?= Count($barangOri->whereIn('barang_status', [3, 4])->findAll()); ?></span>
                     </div>
                 </div>
             </div>

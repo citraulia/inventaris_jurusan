@@ -16,10 +16,15 @@ $lokasi = $lokasiBarang->where(['lokasi_kode' => $barangPending['lokasi_fk']])->
 <?php if ($barangPending['pending_status'] == 1) {
     $status = 'ACTIVE';
 } else if ($barangPending['pending_status'] == 0) {
-    $status = 'INACTIVE';
+    $status = 'DIHAPUS';
 } else if ($barangPending['pending_status'] == 2) {
     $status = 'SEDANG DIPINJAM';
-} ?>
+} else if ($barangPending['pending_status'] == 3) {
+    $status = 'PENDING';
+} else if ($barangPending['pending_status'] == 4) {
+    $status = 'SEDANG PERBAIKAN';
+}
+?>
 <!-- Get nama Barang Pending Status selesai -->
 
 <?= $this->extend('jurusan/layout/template'); ?>

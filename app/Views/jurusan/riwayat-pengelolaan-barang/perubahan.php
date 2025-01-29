@@ -17,9 +17,13 @@ $lokasi = $lokasiBarang->where(['lokasi_kode' => $barangOriginal['lokasi_fk']])-
 <?php if ($barangOriginal['barang_status'] == 1) {
     $status = 'ACTIVE';
 } else if ($barangOriginal['barang_status'] == 0) {
-    $status = 'INACTIVE';
+    $status = 'DIHAPUS';
 } else if ($barangOriginal['barang_status'] == 2) {
     $status = 'SEDANG DIPINJAM';
+} else if ($barangOriginal['barang_status'] == 3) {
+    $status = 'PENDING';
+} else if ($barangOriginal['barang_status'] == 4) {
+    $status = 'SEDANG PERBAIKAN';
 } ?>
 <!-- Get nama Barang Status selesai -->
 

@@ -16,9 +16,13 @@ $lokasi = $lokasiBarang->where(['lokasi_kode' => $informasiBarang['lokasi_fk']])
 <?php if ($informasiBarang['barang_status'] == 1) {
     $status = 'ACTIVE';
 } else if ($informasiBarang['barang_status'] == 0) {
-    $status = 'INACTIVE';
+    $status = 'DIHAPUS';
 } else if ($informasiBarang['barang_status'] == 2) {
     $status = 'SEDANG DIPINJAM';
+} else if ($informasiBarang['barang_status'] == 3) {
+    $status = 'PENDING';
+} else if ($informasiBarang['barang_status'] == 4) {
+    $status = 'SEDANG PERBAIKAN';
 }
 ?>
 <!-- Get nama Barang Status selesai -->
@@ -108,16 +112,20 @@ $lokasi = $lokasiBarang->where(['lokasi_kode' => $informasiBarang['lokasi_fk']])
                         </div>
                     </div>
                 </form>
-                <?php if ($status != 'INACTIVE') : ?>
+                <?php if (in_array($informasiBarang['barang_status'], [1, 2, 3, 4])) : ?>
                     <?php if (allow('3')) : ?>
                         <!-- Tombol Print QR -->
-                        <a href="<?= base_url('jurusan/informasibarang/printqr/' . $informasiBarang['qrcode']); ?>" class="btn btn-primary mt-lg-2" target="_blank">
+                        <a href="<?= base_url('jurusan/informasibarang/printqr/' . $informasiBarang['qrcode']); ?>" class="btn bg-primary mt-lg-2" target="_blank">
                             <i class="fas fa-print mr-3"></i>Print QR
                         </a>
+                    <?php endif; ?>
+                <?php endif; ?>
+                <?php if ($informasiBarang['barang_status'] == 1 || $informasiBarang['barang_status'] == 4) : ?>
+                    <?php if (allow('3')) : ?>
                         <!-- Tombol Edit Barang -->
                         <a href="<?= base_url('jurusan/informasibarang/edit/' . $informasiBarang['barang_kode']); ?>" class="btn btn-warning mt-lg-2"><i class="fas fa-pen mr-3"></i>Edit</a>
-
-                        <?php if ($status != 'SEDANG DIPINJAM') : ?>
+                        <!-- Tombol Hapus Barang -->
+                        <?php if ($informasiBarang['barang_status'] != 2) : ?>
                             <button type="button" class="btn btn-danger mt-lg-2" data-toggle="modal" data-target="#editModal"><i class="fas fa-times mr-3"></i>Hapus Barang</button>
 
                             <?php if ($fotoBarang) : ?>
