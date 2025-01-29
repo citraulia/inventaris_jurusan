@@ -26,11 +26,23 @@ class pengelolaan_barang_model extends Model
         return $this->where(['pengelolaan_kode' => $kode])->first();
     }
 
-    public function createKode($jenis, $kodeBarang)
+    public function createKode($jenis, $kodeBarang, $id)
     {
-        $pengelolaanJenis = substr($jenis, 0, 3);
-        $kode = $pengelolaanJenis . "-" . $kodeBarang;
-
+        // Jika ID tidak valid, ambil ID terakhir dari tabel
+        if ($id <= 0) {
+            $lastItem = $this->orderBy('pengelolaan_id', 'DESC')->first();
+            $id = ($lastItem) ? $lastItem['pengelolaan_id'] + 1 : 1;
+        }        
+    
+        // Ambil 1 huruf pertama dari jenis pengelolaan (misal: TAMBAH -> "t")
+        $pengelolaanJenis = substr(strtolower($jenis), 0, 1);
+    
+        // Hilangkan prefiks "p-" jika ada pada $kodeBarang
+        $kodeBarang = preg_replace('/^p-/', '', $kodeBarang);
+    
+        // Gabungkan menjadi kode unik
+        $kode = $pengelolaanJenis . $id . "-" . $kodeBarang;
+    
         return $kode;
-    }
+    }    
 }
