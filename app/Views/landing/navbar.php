@@ -21,8 +21,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#statistik">Statistik</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?= base_url('landing/informasi-barang'); ?>">Informasi Barang</a></li>
                     <li class="nav-item"><a class="nav-link" href="<?= base_url('/login'); ?>">Login</a></li>
                 </ul>
             </div>
