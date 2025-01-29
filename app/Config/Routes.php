@@ -79,6 +79,10 @@ $routes->delete('jurusan/informasibarang/foto/(:num)', 'Jurusan\InformasiBarang:
 $routes->get('jurusan/informasibarang/(:any)', 'Jurusan\InformasiBarang::detail/$1');
 // End Informasi Barang Menu
 
+// Route Informasi Barang Menu untuk versi umum (tanpa login)
+$routes->get('landing/informasi-barang', 'LandingPage::informasiBarang');
+$routes->get('landing/detail-barang/(:any)', 'LandingPage::detailBarang/$1');
+
 // Informasi Riwayat Pengelolaan Barang
 $routes->get('jurusan/pengelolaan', "Jurusan\RiwayatPengelolaanBarang::index");
 $routes->get('jurusan/pengelolaan/(:segment)', 'Jurusan\RiwayatPengelolaanBarang::detail/$1');
