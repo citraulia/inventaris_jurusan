@@ -110,6 +110,9 @@ class RiwayatPengelolaanBarang extends BaseController
         ]);
 
         if ($pengelolaanBarang['jenis_fk'] == 'TAMBAH') {
+            // Tentukan status barang berdasarkan keadaan barang
+            $barangStatus = ($barangPending['pending_keadaan'] == 'RUSAK') ? 4 : 1;
+
             // Buat kode Barang terlebih dahulu
             $barangID = $this->informasiBarangModel->getInsertID(); // ID Barang setelah save
             $createKodeBarang = $this->informasiBarangModel->createKode(
@@ -130,7 +133,7 @@ class RiwayatPengelolaanBarang extends BaseController
                 'barang_harga' => $barangPending['pending_harga'],
                 'lokasi_fk' => $barangPending['lokasi_fk'],
                 'barang_keterangan' => $barangPending['pending_keterangan'],
-                'barang_status' => $barangPending['pending_status'],
+                'barang_status' => $barangStatus,
                 'barang_dipinjamkan' => $barangPending['pending_dipinjamkan'],
                 'barang_kode' => $kodeBarang,
             ]);
@@ -156,6 +159,8 @@ class RiwayatPengelolaanBarang extends BaseController
             $createKodeBarang = $this->informasiBarangModel->createKode($barangPending['kategori_fk'], $barangPending['lokasi_fk'], $barangPending['pending_nama'], $barangOri['barang_id']);
             $kodeBarang = url_title($createKodeBarang, '-', true);
 
+            $barangStatus = ($barangPending['pending_keadaan'] == 'RUSAK') ? 4 : 1; 
+
             $this->informasiBarangModel->save([
                 'barang_id' => $barangOri['barang_id'],
                 'barang_kode' => $kodeBarang,
@@ -168,7 +173,7 @@ class RiwayatPengelolaanBarang extends BaseController
                 'barang_harga' => $barangPending['pending_harga'],
                 'lokasi_fk' => $barangPending['lokasi_fk'],
                 'barang_keterangan' => $barangPending['pending_keterangan'],
-                'barang_status' => 1,
+                'barang_status' => $barangStatus,
                 'barang_dipinjamkan' => $barangPending['pending_dipinjamkan'],
             ]);
 
@@ -191,7 +196,7 @@ class RiwayatPengelolaanBarang extends BaseController
 
             $this->informasiBarangModel->save([
                 'barang_id' => $barangOri['barang_id'],
-                'barang_status' => $barangPending['pending_status'],
+                'barang_status' => 0,
                 'barang_dipinjamkan' => $barangPending['pending_dipinjamkan'],
             ]);
 
