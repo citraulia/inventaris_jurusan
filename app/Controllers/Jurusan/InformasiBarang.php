@@ -54,7 +54,7 @@ class InformasiBarang extends BaseController
     {
         $data = [
             'title' => 'Jurusan | Informasi Barang',
-            'informasiBarang' => $this->informasiBarangModel->getInformasiBarang(),
+            'informasiBarang' => $this->informasiBarangModel->where('barang_status !=', 0)->findAll(),
             'statusBarang' => $this->informasiBarangModel,
         ];
 
@@ -70,7 +70,7 @@ class InformasiBarang extends BaseController
         }
     
         $informasiBarang['qrcode'] = $kode;
-        $qrData = base_url('jurusan/informasibarang/detail/' . $kode);
+        $qrData = base_url('landing/detail-barang/' . $kode);
     
         $options = new QROptions([
             'version'    => 5,
@@ -101,7 +101,7 @@ class InformasiBarang extends BaseController
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Barang tidak ditemukan.');
         }
     
-        $qrData = base_url('jurusan/informasibarang/detail/' . $kode);
+        $qrData = base_url('landing/detail-barang/' . $kode);
     
         $options = new \chillerlan\QRCode\QROptions([
             'version'    => 5,
@@ -132,7 +132,7 @@ class InformasiBarang extends BaseController
         $pdf->Cell(0, 10, $barang['barang_nama'], 0, 1, 'C');
     
         ob_clean();
-        $pdf->Image($qrImagePath, ($pdf->GetPageWidth() - 50) / 2, $pdf->GetY(), 50, 50);
+        $pdf->Image($qrImagePath, ($pdf->GetPageWidth() - 70) / 2, $pdf->GetY(), 70, 70);
     
         unlink($qrImagePath);
     
@@ -207,10 +207,15 @@ class InformasiBarang extends BaseController
             'pending_keterangan' => $this->request->getVar('keterangan'),
             'pending_dipinjamkan' => $this->request->getVar('dipinjamkan'),
             'pending_kode' => $kodePending,
+            'pending_status' => 3,
         ]);
 
         // Buat kode pengelolaan
-        $createKodePengelolaan = $this->pengelolaanModel->createKode($jenisPengelolaan[0]['jenis_nama'], $kodePending);
+        $createKodePengelolaan = $this->pengelolaanModel->createKode(
+            $jenisPengelolaan[0]['jenis_nama'], 
+            $kodePending,
+            0 
+        );
         $kodePengelolaan = url_title($createKodePengelolaan, '-', true);
 
         // Insert Kode Barang Pending dan Pengelolaan
@@ -220,6 +225,7 @@ class InformasiBarang extends BaseController
             'user_fk' => session('username'),
             'pengelolaan_tanggal' => date("Y-m-d"),
             'jenis_fk' => $jenisPengelolaan[0]['jenis_nama'],
+            'pengelolaan_status' => 2,
         ]);
 
         //Ambil foto dan namanya
@@ -321,7 +327,11 @@ class InformasiBarang extends BaseController
         ]);
         
         // Buat kode pengelolaan
-        $createKodePengelolaan = $this->pengelolaanModel->createKode($jenisPengelolaan[0]['jenis_nama'], $kodePending);
+        $createKodePengelolaan = $this->pengelolaanModel->createKode(
+            $jenisPengelolaan[0]['jenis_nama'], 
+            $kodePending,
+            0 
+        );
         $kodePengelolaan = url_title($createKodePengelolaan, '-', true);
 
         // Insert Kode Barang Pending dan Pengelolaan
@@ -351,7 +361,7 @@ class InformasiBarang extends BaseController
 
         $this->informasiBarangModel->save([
             'barang_id' => $id,
-            'barang_status' => 0,
+            'barang_status' => 3,
         ]);
 
         session()->setFlashdata('pesan', 'Perubahan data "' . $this->request->getVar('nama') . '" berhasil diajukan.');
@@ -447,7 +457,11 @@ class InformasiBarang extends BaseController
         }
     
         // Buat kode pengelolaan
-        $createKodePengelolaan = $this->pengelolaanModel->createKode($jenisPengelolaan['jenis_nama'], $kodePending);
+        $createKodePengelolaan = $this->pengelolaanModel->createKode(
+            $jenisPengelolaan['jenis_nama'], 
+            $kodePending,
+            0 
+        );
         $kodePengelolaan = url_title($createKodePengelolaan, '-', true);
     
         // Insert data ke tabel pengelolaan_barang
@@ -475,7 +489,7 @@ class InformasiBarang extends BaseController
         // Update status barang di tabel informasi_barang
         $this->informasiBarangModel->save([
             'barang_id' => $id,
-            'barang_status' => 0,
+            'barang_status' => 3,
         ]);
     
         session()->setFlashdata('pesan', 'Penghapusan data "' . $barangOriginal['barang_nama'] . '" berhasil diajukan.');

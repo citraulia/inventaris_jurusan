@@ -45,6 +45,12 @@ $routes->get('register', 'UserLogin::register');
  */
 $routes->get('jurusan', "Jurusan\Dashboard::index");
 $routes->get('jurusan/myprofile/(:any)', "Jurusan\MyProfile::index/$1");
+$routes->get('jurusan/myprofile-edit/(:num)', "Jurusan\MyProfile::edit/$1");
+$routes->post('jurusan/myprofile/update/(:num)', "Jurusan\MyProfile::update/$1");
+
+// Routes untuk Riwayat Penambahan Akun Peminjam di Dashboard
+$routes->get('jurusan/userpeminjam/setujui/(:num)', 'Jurusan\RiwayatPenambahanAkunPeminjam::setujuiPeminjam/$1');
+$routes->get('jurusan/userpeminjam/tolak/(:num)', 'Jurusan\RiwayatPenambahanAkunPeminjam::tolakPeminjam/$1');
 
 // User Jurusan Menu
 $routes->get('jurusan/userjurusan', "Jurusan\UserJurusan::index");
@@ -94,11 +100,17 @@ $routes->get('jurusan/peminjaman', "Jurusan\RiwayatPeminjamanBarang::index");
 $routes->get('jurusan/peminjaman/(:num)', "Jurusan\RiwayatPeminjamanBarang::detail/$1");
 // End Riwayat Peminjaman Barang
 
+// Page Riwayat Penambahan akun peminjam
+$routes->get('jurusan/penambahan-peminjam', "Jurusan\RiwayatPenambahanAkunPeminjam::index");
+$routes->post('jurusan/penambahan-peminjam/setujui/(:num)', 'Jurusan\RiwayatPenambahanAkunPeminjam::setujuiPeminjam/$1');
+$routes->post('jurusan/penambahan-peminjam/tolak/(:num)', 'Jurusan\RiwayatPenambahanAkunPeminjam::tolakPeminjam/$1');
+$routes->delete('jurusan/penambahan-peminjam/delete/(:num)', 'Jurusan\UserPeminjam::delete/$1');
+
 // User Peminjam Menu
 $routes->get('jurusan/userpeminjam', "Jurusan\UserPeminjam::index");
 $routes->get('jurusan/userpeminjam/edit/(:segment)', 'Jurusan\UserPeminjam::edit/$1');
 $routes->delete('jurusan/userpeminjam/(:num)', 'Jurusan\UserPeminjam::delete/$1');
-$routes->get('jurusan/userpeminjam/(:any)', 'Jurusan\UserPeminjam::detail/$1');
+$routes->get('jurusan/userpeminjam/(:any)', 'Jurusan\UserPeminjam::detail/$1'); //menangani tombol detail pada page user jurusan, riwayat penambahan akun peminjam, dan dashboard (Pengajuan Penambahan Akun Peminjam)
 // End User Peminjam Manu
 
 // setujui dan tolak barang per baris
@@ -113,6 +125,8 @@ $routes->post('jurusan/riwayatpeminjamanbarang/tolakBarang', 'Jurusan\RiwayatPem
  */
 $routes->get('peminjam', "Peminjam\Dashboard::index");
 $routes->get('peminjam/myprofile/(:any)', "Peminjam\MyProfile::index/$1");
+$routes->get('peminjam/myprofile-edit/(:num)', "Peminjam\MyProfile::edit/$1");
+$routes->post('peminjam/myprofile/update/(:num)', "Peminjam\MyProfile::update/$1");
 
 // Menu Barang yang dapat Dipinjamkan
 $routes->get('peminjam/barangpinjaman', "Peminjam\BarangPinjaman::index");
