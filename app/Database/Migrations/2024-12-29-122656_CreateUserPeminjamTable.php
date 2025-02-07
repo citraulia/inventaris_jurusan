@@ -25,8 +25,10 @@ class CreateUserPeminjamTable extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => 64,
             ],
-            'peminjam_alamat' => [
-                'type' => 'TEXT',
+            'peminjam_email' => [
+                'type' => 'VARCHAR',
+                'constraint' => 128,
+                'unique'     => true,
             ],
             'peminjam_username' => [
                 'type'       => 'VARCHAR',
@@ -40,6 +42,12 @@ class CreateUserPeminjamTable extends Migration
             'peminjam_level' => [
                 'type'       => 'SMALLINT',
                 'default'    => 4,
+            ],
+            'peminjam_status' => [
+                'type'       => 'SMALLINT',
+                'constraint' => 1,
+                'default'    => 1,
+                'comment'    => "'0' = Inactive, '1' = Active, '2' = Pending",
             ],
             'created_at' => [
                 'type'    => 'TIMESTAMP',

@@ -15,9 +15,12 @@ class UserLogin extends BaseController
     //Return to User (peminjam) Login Page.
     public function index()
     {
+        $userPeminjam = $this->userPeminjamModel->where('peminjam_status', 1)->findAll();
+
         $data = [
-            'title' => 'User Login',
-            'background' => 'primary'
+            'title' => 'LogIn Sebagai Peminjam',
+            'background' => 'primary',
+            'userPeminjam' => $userPeminjam,
         ];
 
         return view('user-login/index', $data);
@@ -40,14 +43,38 @@ class UserLogin extends BaseController
     {
         //Validasi input
         if (!$this->validate([
-            'nama' => 'required',
-            'hp' => 'required|numeric',
-            'alamat' => 'required',
+            'nama' => 'required|min_length[3]',
+            'hp' => 'required|numeric|min_length[10]',
+            'email' => 'required|valid_email|is_unique[user_peminjam.peminjam_email]',
             'username' => 'required|is_unique[user_peminjam.peminjam_username]',
-            'password' => 'required|min_length[8]',
+            'password' => 'required|min_length[8]|regex_match[/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/]',
             'confirmPassword' => 'matches[password]',
+        ], [
+            'confirmPassword' => [
+                'matches' => 'Password dan Confirm Password tidak sama. Mohon cek kembali.',
+            ],
         ])) {
-            return redirect()->to('register')->withInput();
+
+            $validation = \Config\Services::validation();
+
+            if ($validation->getError('username')) {
+                session()->setFlashdata('error', 'Username telah tersedia. Mohon ganti.');
+            }
+        
+            if ($validation->getError('email')) {
+                session()->setFlashdata('error', 'Email telah digunakan. Mohon ganti.');
+            }
+        
+            if ($validation->getError('password')) {
+                session()->setFlashdata('error', 'Password harus mengandung minimal 8 karakter, dan mengandung huruf dan angka.');
+            }
+
+            // Jika confirm password tidak cocok
+            if ($validation->getError('confirmPassword')) {
+                session()->setFlashdata('error', $validation->getError('confirmPassword'));
+            }
+            
+            return redirect()->to('/register')->withInput()->with('validation', $validation);
         }
 
         $slug = url_title($this->request->getVar('username'), '-', true);
@@ -55,20 +82,21 @@ class UserLogin extends BaseController
             'peminjam_nama' => $this->request->getVar('nama'),
             'peminjam_slug' => $slug,
             'peminjam_hp' => $this->request->getVar('hp'),
-            'peminjam_alamat' => $this->request->getVar('alamat'),
+            'peminjam_email' => $this->request->getVar('email'),
             'peminjam_username' => $this->request->getVar('username'),
-            'peminjam_password' => $this->request->getVar('password')
+            'peminjam_password' => $this->request->getVar('password'),
+            'peminjam_status' => 2,
         ]);
 
-        session()->setFlashdata('pesan', 'Anda berhasil mendaftar. Silahkan LogIn.');
+        session()->setFlashdata('pesan', 'Permintaan membuat akun berhasil diajukan. Mohon tunggu persetujuan admin.');
 
-        return redirect()->to("/");
+        return redirect()->to("/login");
     }
 
     public function jurusanLogin()
     {
         $data = [
-            'title' => 'Login Jurusan',
+            'title' => 'LogIn Sebagai Admin',
             'background' => 'info'
         ];
 

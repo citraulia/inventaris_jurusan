@@ -30,6 +30,7 @@
                         <nav class="sb-sidenav-menu-nested nav">
                             <a class="nav-link" href="<?= base_url('jurusan/pengelolaan'); ?>">Riwayat Pengelolaan</a>
                             <a class="nav-link" href="<?= base_url('jurusan/peminjaman'); ?>">Riwayat Peminjaman</a>
+                            <a class="nav-link" href="<?= base_url('jurusan/penambahan-peminjam'); ?>">Riwayat Penambahan Akun Peminjam</a>
                         </nav>
                     </div>
                     <div class="sb-sidenav-menu-heading">Users</div>
