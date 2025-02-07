@@ -176,27 +176,32 @@ class LokasiBarang extends BaseController
         $pdf->SetFont('Times', 'B', 14);
         $pdf->SetAutoPageBreak(true);
 
+        // Logo UIN
+        $logoPath = FCPATH . 'img/logo_uin.png';
+        $pdf->Image($logoPath, 26, 18, 23); // posisi x=26, y=18, lebar 23
+
         // Header
+        $pdf->Cell(0, 15, '', 0, 1);
         $pdf->Cell(0, 7, 'KEMENTRIAN AGAMA', 0, 1, 'C');
         $pdf->Cell(0, 7, 'UNIVERSITAS ISLAM NEGERI', 0, 1, 'C');
         $pdf->SetFont('Times', 'B', 13);
         $pdf->Cell(0, 7, 'SUNAN GUNUNG DJATI BANDUNG', 0, 1, 'C');
         $pdf->Cell(0, 7, 'FAKULTAS SAINS DAN TEKNOLOGI', 0, 1, 'C');
         $pdf->Cell(0, 7, 'JURUSAN TEKNIK INFORMATIKA', 0, 1, 'C');
-        $pdf->Line(25.4, 40, $width - 25.4, 40);
+        $pdf->Line(25.4, 55, $width - 25.4, 55);
 
         // Alamat Kampus
         $pdf->SetFont('Times', '', 8);
         $pdf->Cell(0, 9, '
                     Jalan A.H. Nasution No. 105 Cibiru - Bandung 40614 Telp. (022) 7800525 Fax. (022) 7803936 web: http://www.fst.uinsgd.ac.id
                     ', 0, 1, 'C');
-        $pdf->Line(25.4, 45, $width - 25.4, 45);
+        $pdf->Line(25.4, 60, $width - 25.4, 60);
         $pdf->Cell(0, 3, '', 0, 1);
 
         // Judul Surat
         $pdf->SetFont('Times', 'B', 12);
         $pdf->Cell(0, 7, 'DAFTAR BARANG RUANGAN', 0, 1, 'C');
-        $pdf->Line(72, 56, $width - 72, 56);
+        $pdf->Line(72, 71, $width - 72, 71);
         $pdf->Cell(0, 5, '', 0, 1);
 
         $pdf->SetFont('Times', 'B', 9);
