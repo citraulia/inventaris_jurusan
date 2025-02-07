@@ -115,7 +115,7 @@ function getUserName($username)
 
                                     <td>
                                         <a href="<?= base_url('jurusan/peminjaman/' . $log['transaksi_id']); ?>" class="btn btn-info btn-block">Detail</a>
-                                        <?php if (allow('1', '2')) : ?>
+                                        <?php if (allow('1') || allow('2')) : ?>
                                             <?php if ($log['pengajuan_status'] == 2) : ?>
                                                 <form action="<?= base_url('Jurusan/RiwayatPeminjamanBarang/setujui/' . $log['transaksi_id']); ?>" method="POST">
                                                     <div class="btn-group mt-2 btn-block">

@@ -46,7 +46,9 @@
                         <form action="<?= base_url('jurusan/userjurusan/' . $userJurusan['user_id']); ?>" method="POST" class="d-inline">
                             <?= csrf_field(); ?>
                             <Input type="hidden" name="_method" value="DELETE">
-                            <button type="submit" class="btn btn-danger mt-lg-3" onclick="return confirm('Apakah anda yakin?');"><i class="fas fa-trash mr-3"></i>Delete</a>
+                            <button type="button" class="btn btn-danger mt-lg-3" data-toggle="modal" data-target="#deleteModal">
+                                <i class="fas fa-trash mr-3"></i>Hapus
+                            </button>
                         </form>
                     <?php endif; ?>
                 <?php endif; ?>
@@ -55,4 +57,31 @@
         </div>
     </div>
 </main>
+
+<!-- Modal Konfirmasi Delete -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Konfirmasi Penghapusan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Apakah Anda yakin ingin menghapus user ini?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+                <!-- Form untuk Hapus Data -->
+                <form action="<?= base_url('jurusan/userjurusan/' . $userJurusan['user_id']); ?>" method="POST">
+                    <?= csrf_field(); ?>
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?= $this->endSection(); ?>

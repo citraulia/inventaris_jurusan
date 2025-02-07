@@ -121,7 +121,7 @@ function getLevel($jenis)
                                         <a href="<?= base_url('jurusan/pengelolaan/' . $log['pengelolaan_kode'] . '/' . $log['barang_fk']); ?>" class="btn btn-info btn-block">Detail</a>
 
                                         <?php if ($log['pengelolaan_status'] == 2) : ?>
-                                            <?php if (allow('1', getLevel($log['jenis_fk']))) : ?>
+                                            <?php if (allow('1') || allow('2') && allow(getLevel($log['jenis_fk']))) : ?>
                                                 <form action="<?= base_url('Jurusan/RiwayatPengelolaanBarang/setujui/' . $log['pengelolaan_kode'] . '/' . $log['barang_fk']); ?>" method="POST">
                                                     <div class="btn-group mt-2 btn-block">
                                                         <input type="hidden" id="id" name="id" value="<?= $log['pengelolaan_id']; ?>" />

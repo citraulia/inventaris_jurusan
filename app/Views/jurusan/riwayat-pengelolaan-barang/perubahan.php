@@ -187,7 +187,7 @@ $lokasi = $lokasiBarang->where(['lokasi_kode' => $barangOriginal['lokasi_fk']])-
                         </div>
                     </form>
                     <?php if ($pengelolaanBarang['pengelolaan_status'] == 2) : ?>
-                        <?php if (allow('1', '2')) : ?>
+                        <?php if (allow('1') || allow('2')) : ?>
                             <form action="<?= base_url('Jurusan/RiwayatPengelolaanBarang/setujui/' . $pengelolaanBarang['pengelolaan_kode'] . '/' . $pengelolaanBarang['barang_fk']); ?>" method="POST">
                                 <div class="btn-group mt-2 btn-block col-md-3">
                                     <input type="hidden" id="id" name="id" value="<?= $pengelolaanBarang['pengelolaan_id']; ?>" />
