@@ -3,7 +3,12 @@
 <?= $this->section('content'); ?>
 <main>
     <div class="container-fluid">
-        <h1 class="mt-4">Detail Barang: <?= $informasiBarang['barang_nama']; ?></h1>
+        <h1 class="mt-4">
+            <a href="<?= base_url('landing/informasi-barang'); ?>" class="btn btn-light btn-sm mr-2">
+                <i class="fas fa-arrow-left fa-2x"></i>
+            </a>
+            Detail Barang: <?= $informasiBarang['barang_nama']; ?>
+        </h1>
         <ol class="breadcrumb mb-4">
             <li class="breadcrumb-item"><a href="<?= base_url('landing/informasi-barang'); ?>">Informasi Barang</a></li>
             <li class="breadcrumb-item active">Detail Barang</li>

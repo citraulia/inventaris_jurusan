@@ -222,3 +222,26 @@ footer img {
 footer .list-unstyled li {
     margin-bottom: 5px;
 }
+
+@media (max-width: 768px) {
+    footer .col-md-3 {
+        flex: 0 0 100%; /* Setiap kolom menjadi 100% lebar pada mobile */
+        max-width: 100%;
+        margin-bottom: 30px;
+        margin-left: 30px;
+    }
+
+    footer h5 {
+        font-size: 1rem; /* Ukuran judul lebih kecil */
+    }
+
+    footer p,
+    footer ul li {
+        font-size: 0.85rem; /* Ukuran teks lebih kecil di mobile */
+    }
+
+    footer .container {
+        flex-direction: column; /* Mengatur arah kolom secara vertikal */
+        align-items: center; /* Menyelaraskan semua kolom ke tengah */
+    }
+}

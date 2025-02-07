@@ -3,7 +3,13 @@
 <?= $this->section('content'); ?>
 <main>
     <div class="container-fluid">
-        <h1 class="mt-4">Informasi Barang</h1>
+        <h1 class="mt-4">
+            <a href="<?= base_url('/'); ?>" class="btn btn-light btn-sm mr-2">
+                <i class="fas fa-arrow-left fa-2x"></i>
+            </a>
+            Informasi Barang
+        </h1>
+
         <ol class="breadcrumb mb-4">
             <li class="breadcrumb-item active">Informasi Barang</li>
         </ol>
