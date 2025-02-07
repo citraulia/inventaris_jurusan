@@ -11,6 +11,11 @@
         <div class="card border-dark mb-3">
             <div class=" card-header">Tambah Admin</div>
             <div class="card-body text-dark">
+                <?php if (session()->getFlashdata('error')): ?>
+                    <div class="alert alert-danger">
+                        <?= session()->getFlashdata('error'); ?>
+                    </div>
+                <?php endif; ?>
                 <form action="<?= base_url('jurusan/userjurusan/save'); ?>" method="POST">
                     <?= csrf_field(); ?>
                     <div class="form-row">

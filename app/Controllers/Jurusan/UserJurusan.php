@@ -61,9 +61,29 @@ class UserJurusan extends BaseController
             'nip' => 'numeric',
             'username' => 'required|alpha_numeric|is_unique[user_jurusan.user_username]',
             'password' => 'required|alpha_numeric|min_length[8]',
-            'confirmPassword' => 'matches[password]'
+            'confirmPassword' => 'matches[password]',
+        ], [
+            'confirmPassword' => [
+                'matches' => 'Password dan Confirm Password tidak sama. Mohon cek kembali.',
+            ],
         ])) {
-            return redirect()->to('/jurusan/userjurusan/create')->withInput();
+
+            $validation = \Config\Services::validation();
+
+            if ($validation->getError('username')) {
+                session()->setFlashdata('error', 'Username telah tersedia. Mohon ganti.');
+            }
+        
+            if ($validation->getError('password')) {
+                session()->setFlashdata('error', 'Password harus mengandung minimal 8 karakter');
+            }
+
+            // Jika confirm password tidak cocok
+            if ($validation->getError('confirmPassword')) {
+                session()->setFlashdata('error', $validation->getError('confirmPassword'));
+            }
+
+            return redirect()->to('/jurusan/userjurusan/create')->withInput()->with('validation', $validation);
         }
 
         $slug = url_title($this->request->getVar('username'), '-', true);
