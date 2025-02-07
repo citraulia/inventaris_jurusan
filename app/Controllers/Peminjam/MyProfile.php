@@ -38,6 +38,23 @@ class MyProfile extends BaseController
         return view('peminjam/my-profile', $data);
     }
 
+    public function edit($id)
+    {
+        $userPeminjam = $this->userPeminjamModel->find($id);
+
+        if (!$userPeminjam) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('User tidak ditemukan.');
+        }
+
+        $data = [
+            'title' => 'Edit Profile',
+            'userPeminjam' => $userPeminjam,
+            'validation' => \Config\Services::validation(),
+        ];
+
+        return view('peminjam/my-profile-edit', $data);
+    }
+
     public function update($id)
     {
         // Cek username
@@ -52,12 +69,12 @@ class MyProfile extends BaseController
         if (!$this->validate([
             'nama' => 'required',
             'hp' => 'required',
-            'alamat' => 'required',
+            'email' => 'required',
             'username' => $rule_username,
             'password' => 'required|alpha_numeric|min_length[8]',
             'confirmPassword' => 'matches[password]',
         ])) {
-            return redirect()->to("/peminjam/myprofile/" . session('slug'))->withInput();
+            return redirect()->to("/peminjam/myprofile-edit/" . $id)->withInput();
         }
 
         $slug = url_title($this->request->getVar('username'), '-', true);
@@ -66,7 +83,7 @@ class MyProfile extends BaseController
             'peminjam_nama' => $this->request->getVar('nama'),
             'peminjam_slug' => $slug,
             'peminjam_hp' => $this->request->getVar('hp'),
-            'peminjam_alamat' => $this->request->getVar('alamat'),
+            'peminjam_email' => $this->request->getVar('email'),
             'peminjam_username' => $this->request->getVar('username'),
             'peminjam_password' => $this->request->getVar('password')
         ]);

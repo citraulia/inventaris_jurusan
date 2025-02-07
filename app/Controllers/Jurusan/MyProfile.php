@@ -33,6 +33,23 @@ class MyProfile extends BaseController
         return view('jurusan/my-profile', $data);
     }
 
+    public function edit($id)
+    {
+        $user = $this->userJurusanModel->find($id);
+
+        if (!$user) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('User tidak ditemukan.');
+        }
+
+        $data = [
+            'title' => 'Ubah Data User',
+            'userJurusan' => $user,
+            'validation' => \Config\Services::validation()
+        ];
+
+        return view('jurusan/my-profile-edit', $data);
+    }
+
     public function update($id)
     {
         // Cek username
@@ -51,7 +68,7 @@ class MyProfile extends BaseController
             'password' => 'required|alpha_numeric|min_length[8]',
             'confirmPassword' => 'matches[password]'
         ])) {
-            return redirect()->to('/jurusan/myprofile/' . $this->request->getVar('slug'))->withInput();
+            return redirect()->to('/jurusan/myprofile-edit/' . $id)->withInput();
         }
 
         $slug = url_title($this->request->getVar('username'), '-', true);
@@ -62,6 +79,12 @@ class MyProfile extends BaseController
             'user_nip' => $this->request->getVar('nip'),
             'user_username' => $this->request->getVar('username'),
             'user_password' => $this->request->getVar('password')
+        ]);
+
+        session()->set([
+            'slug' => $slug,
+            'user_id' => $id,
+            'nama' => $this->request->getVar('nama')
         ]);
 
         session()->setFlashdata('pesan', 'Data berhasil diubah.');

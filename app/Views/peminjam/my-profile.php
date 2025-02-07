@@ -18,65 +18,41 @@
         <!-- End Flash Session -->
 
         <div class="card border-dark mb-3">
-            <div class=" card-header">Profil Saya</div>
+            <div class="card-header">Profil Saya</div>
             <div class="card-body text-dark">
-                <form action="<?= base_url('Peminjam/MyProfile/update/' . $userPeminjam['peminjam_id']); ?>" method="POST">
-                    <input type="hidden" name="slug" value="<?= session('slug'); ?>">
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label class="small mb-1" for="inputNama">Nama</label>
-                            <input type="text" class="form-control py-4 <?= ($validation->hasError('nama')) ? 'is-invalid' : ''; ?>" id="inputNama" name="nama" value="<?= (old('nama')) ? old('nama') : session('nama'); ?>">
-                            <div id="namaFeedback" class="invalid-feedback">
-                                <?= $validation->getError('nama'); ?>
-                            </div>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label class="small mb-1" for="inputHp">Nomor Hp</label>
-                            <input type="tel" class="form-control py-4 <?= ($validation->hasError('hp')) ? 'is-invalid' : ''; ?>" id="inputHp" name="hp" pattern="[0-9]{9-13}" value="<?= (old('hp')) ? old('hp') : $userPeminjam['peminjam_hp']; ?>">
-                            <small>Format: 082112345678</small>
-                            <div id="hpFeedback" class="invalid-feedback">
-                                <?= $validation->getError('hp'); ?>
-                            </div>
-                        </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label class="small mb-1" for="inputNama">Nama</label>
+                        <input type="text" class="form-control py-4" id="inputNama" value="<?= session('nama'); ?>" readonly />
                     </div>
-                    <div class="form-group">
-                        <label class="small mb-1" for="inputAlamat">Alamat</label>
-                        <input type="text" class="form-control py-4 <?= ($validation->hasError('alamat')) ? 'is-invalid' : ''; ?>" id="inputAlamat" name="alamat" value="<?= (old('alamat')) ? old('alamat') : $userPeminjam['peminjam_alamat']; ?>">
-                        <div id="alamatFeedback" class="invalid-feedback">
-                            <?= $validation->getError('alamat'); ?>
-                        </div>
+                    <div class="form-group col-md-6">
+                        <label class="small mb-1" for="inputHp">Nomor Hp</label>
+                        <input type="tel" class="form-control py-4" id="inputHp" value="<?= $userPeminjam['peminjam_hp']; ?>" readonly />
                     </div>
-                    <p style="font-weight: bold;">Please re-enter or change password to confirm</p>
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label class="small mb-1" for="inputUsername">Username</label>
-                            <input type="text" class="form-control py-4 <?= ($validation->hasError('username')) ? 'is-invalid' : ''; ?>" id="inputUsername" name="username" value="<?= (old('username')) ? old('username') : session('username'); ?>">
-                            <div id="usernameFeedback" class="invalid-feedback">
-                                <?= $validation->getError('username'); ?>
-                            </div>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label class="small mb-1" for="inputPassword">Password</label>
-                            <input type="password" class="form-control py-4 <?= ($validation->hasError('password')) ? 'is-invalid' : ''; ?>" id="inputPassword" name="password" value="<?= $userPeminjam['peminjam_password']; ?>">
-                            <div id="passwordFeedback" class="invalid-feedback">
-                                <?= $validation->getError('password'); ?>
-                            </div>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label class="small mb-1" for="inputConfirmPassword">Confirm Password</label>
-                            <input type="password" class="form-control py-4 <?= ($validation->hasError('confirmPassword')) ? 'is-invalid' : ''; ?>" id="inputConfirmPassword" name="confirmPassword" value="<?= $userPeminjam['peminjam_password']; ?>">
-                            <div id="confirmPasswordFeedback" class="invalid-feedback">
-                                <?= $validation->getError('confirmPassword'); ?>
-                            </div>
-                        </div>
+                </div>
+                <div class="form-group">
+                    <label class="small mb-1" for="inputEmail">Email</label>
+                    <input type="text" class="form-control py-4" id="inputEmail" value="<?= $userPeminjam['peminjam_email']; ?>" readonly />
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label class="small mb-1" for="inputUsername">Username</label>
+                        <input type="text" class="form-control py-4" id="inputUsername" value="<?= session('username'); ?>" readonly />
                     </div>
+                    <div class="form-group col-md-4">
+                        <label class="small mb-1" for="inputPassword">Password</label>
+                        <input type="password" class="form-control py-4" id="inputPassword" value="<?= $userPeminjam['peminjam_password']; ?>" readonly />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="small mb-1" for="inputConfirmPassword">Confirm Password</label>
+                        <input type="password" class="form-control py-4" id="inputConfirmPassword" value="<?= $userPeminjam['peminjam_password']; ?>" readonly />
+                    </div>
+                </div>
 
-                    <button type="submit" class="btn btn-success mt-lg-2"><i class="fas fa-check mr-3"></i>Simpan Perubahan Data</button>
-                    <a href="<?= base_url('peminjam'); ?>" class="btn btn-danger mt-lg-2"><i class="fas fa-times mr-3"></i>Batal</a>
-                </form>
-
+                <!-- Tombol Edit -->
+                <a href="<?= base_url('peminjam/myprofile-edit/' . $userPeminjam['peminjam_id']); ?>" class="btn btn-primary mt-lg-3"><i class="fas fa-pen mr-3"></i>Edit</a>
             </div>
         </div>
     </div>
 </main>
-<?= $this->endSection('content'); ?>
+<?= $this->endSection(); ?>
