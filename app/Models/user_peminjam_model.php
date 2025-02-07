@@ -11,7 +11,7 @@ class user_peminjam_model extends Model
 
     protected $useAutoIncrement = true;
 
-    protected $allowedFields = ['peminjam_nama', 'peminjam_slug', 'peminjam_hp', 'peminjam_alamat', 'peminjam_username', 'peminjam_password'];
+    protected $allowedFields = ['peminjam_nama', 'peminjam_slug', 'peminjam_hp', 'peminjam_email', 'peminjam_username', 'peminjam_password', 'peminjam_status',];
 
     protected $useTimestamps = true;
 
@@ -22,5 +22,12 @@ class user_peminjam_model extends Model
         }
 
         return $this->where(['peminjam_slug' => $slug])->first();
+    }
+
+    public function getRiwayatPenambahanAkun()
+    {
+        return $this->select('peminjam_id, peminjam_nama, peminjam_username, peminjam_email, peminjam_status, created_at')
+                    ->orderBy('created_at', 'DESC')
+                    ->findAll();
     }
 }

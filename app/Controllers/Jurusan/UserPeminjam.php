@@ -20,9 +20,11 @@ class UserPeminjam extends BaseController
 
     public function index()
     {
+        $userPeminjam = $this->userPeminjamModel->where('peminjam_status', 1)->findAll();
+
         $data = [
             'title' => 'Jurusan | Users Peminjam',
-            'userPeminjam' => $this->userPeminjamModel->getUserPeminjam(),
+            'userPeminjam' => $userPeminjam,
         ];
 
         return view('jurusan/user-peminjam/index', $data);
@@ -68,7 +70,7 @@ class UserPeminjam extends BaseController
         if (!$this->validate([
             'nama' => 'required',
             'hp' => 'required',
-            'alamat' => 'required',
+            'email' => 'required',
             'username' => $rule_username,
             'password' => 'required|alpha_numeric|min_length[8]',
             'confirmPassword' => 'matches[password]',
@@ -82,7 +84,7 @@ class UserPeminjam extends BaseController
             'peminjam_nama' => $this->request->getVar('nama'),
             'peminjam_slug' => $slug,
             'peminjam_hp' => $this->request->getVar('hp'),
-            'peminjam_alamat' => $this->request->getVar('alamat'),
+            'peminjam_email' => $this->request->getVar('email'),
             'peminjam_username' => $this->request->getVar('username'),
             'peminjam_password' => $this->request->getVar('password')
         ]);
@@ -96,9 +98,15 @@ class UserPeminjam extends BaseController
     {
         $this->userPeminjamModel->delete($id);
 
-        session()->setFlashdata('pesan', 'Data berhasil dihapus.');
+        session()->setFlashdata('pesan', 'Data akun peminjam berhasil dihapus.');
 
-        return redirect()->to("/jurusan/userpeminjam");
+        $redirect = $this->request->getVar('redirect');
+
+        if ($redirect == 'riwayat') {
+            return redirect()->to('/jurusan/penambahan-peminjam');
+        } else {
+            return redirect()->to('/jurusan/userpeminjam');
+        }
     }
 
     //--------------------------------------------------------------------

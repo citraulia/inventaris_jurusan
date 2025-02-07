@@ -10,6 +10,11 @@
                         <h3 class="text-center font-weight-light my-4"><?= $title; ?></h3>
                     </div>
                     <div class="card-body">
+                        <?php if (session()->getFlashdata('error')): ?>
+                            <div class="alert alert-danger">
+                                <?= session()->getFlashdata('error'); ?>
+                            </div>
+                        <?php endif; ?>
                         <form action="<?= base_url('UserLogin/save'); ?>" method="POST">
                             <?= csrf_field(); ?>
                             <div class="form-row">
@@ -30,10 +35,10 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="small mb-1" for="inputAlamat">Alamat</label>
-                                <input type="text" class="form-control py-4 <?= ($validation->hasError('alamat')) ? 'is-invalid' : ''; ?>" id="inputAlamat" name="alamat" placeholder="Masukan alamat Anda" value="<?= old('alamat'); ?>">
-                                <div id="alamatFeedback" class="invalid-feedback">
-                                    <?= $validation->getError('alamat'); ?>
+                                <label class="small mb-1" for="inputEmail">Email</label>
+                                <input type="text" class="form-control py-4 <?= ($validation->hasError('email')) ? 'is-invalid' : ''; ?>" id="inputEmail" name="email" placeholder="Masukan email Anda" value="<?= old('email'); ?>">
+                                <div id="emailFeedback" class="invalid-feedback">
+                                    <?= $validation->getError('email'); ?>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -60,7 +65,7 @@
                                 </div>
                             </div>
                             <div class="form-group d-flex flex-row-reverse mt-4 mb-0">
-                                <button type="submit" class="btn btn-primary">Simpan</button>
+                                <button type="submit" class="btn btn-primary">Ajukan Penambahan Akun</button>
                             </div>
                         </form>
                     </div>

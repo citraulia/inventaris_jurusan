@@ -156,7 +156,7 @@ function getLevel($jenis)
                                         <a href="<?= base_url('jurusan/pengelolaan/' . $log['pengelolaan_kode'] . '/' . $log['barang_fk']); ?>" class="btn btn-info btn-block">Detail</a>
 
                                         <?php if ($log['pengelolaan_status'] == 2) : ?>
-                                            <?php if (allow('1', getLevel($log['jenis_fk']))) : ?>
+                                            <?php if (allow('1') || allow('2') && allow(getLevel($log['jenis_fk']))) : ?>
                                                 <form action="<?= base_url('Jurusan/RiwayatPengelolaanBarang/setujui/' . $log['pengelolaan_kode'] . '/' . $log['barang_fk']); ?>" method="POST">
                                                     <div class="btn-group mt-2 btn-block">
                                                         <input type="hidden" id="id" name="id" value="<?= $log['pengelolaan_id']; ?>" />
@@ -282,7 +282,7 @@ function getLevel($jenis)
                                     </td>
                                     <td>
                                         <a href="<?= base_url('jurusan/peminjaman/' . $log['transaksi_id']); ?>" class="btn btn-info btn-block">Detail</a>
-                                        <?php if (allow('1', '2')) : ?>
+                                        <?php if (allow('1') || allow('2')) : ?>
                                             <?php if ($log['pengajuan_status'] == 2) : ?>
                                                 <form action="<?= base_url('Jurusan/RiwayatPeminjamanBarang/setujui/' . $log['transaksi_id']); ?>" method="POST">
                                                     <div class="btn-group mt-2 btn-block">
@@ -314,6 +314,76 @@ function getLevel($jenis)
                 </div>
             </div>
         </div>
+
+        <h2 class="mt-4">Pengajuan Penambahan Akun Peminjam</h2>
+        <div class="card mb-4">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <div>
+                    <i class="fas fa-table mr-1"></i>
+                    Daftar Peminjam yang Menunggu Persetujuan
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Nama</th>
+                                <th>Email</th>
+                                <th>HP</th>
+                                <th>Username</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $i = 1; ?>
+                            <?php foreach ($peminjamPending as $peminjam) : ?>
+                                <tr>
+                                    <td><?= $i++; ?></td>
+                                    <td><?= $peminjam['peminjam_nama']; ?></td>
+                                    <td><?= $peminjam['peminjam_email']; ?></td>
+                                    <td><?= $peminjam['peminjam_hp']; ?></td>
+                                    <td><?= $peminjam['peminjam_username']; ?></td>
+                                    <td>
+                                        <span class="badge text-white
+                                            <?php if ($peminjam['peminjam_status'] == 2) {
+                                                echo 'bg-warning'; // Pending
+                                            } elseif ($peminjam['peminjam_status'] == 1) {
+                                                echo 'bg-success'; // Disetujui
+                                            } elseif ($peminjam['peminjam_status'] == 0) {
+                                                echo 'bg-danger'; // Ditolak
+                                            } ?>">
+                                            <?php 
+                                            if ($peminjam['peminjam_status'] == 2) {
+                                                echo 'Pending';
+                                            } elseif ($peminjam['peminjam_status'] == 1) {
+                                                echo 'Disetujui';
+                                            } else {
+                                                echo 'Ditolak';
+                                            }
+                                            ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="<?= base_url('jurusan/userpeminjam/' . $peminjam['peminjam_slug']); ?>" class="btn btn-info btn-block">Detail</a>
+
+                                        <?php if ($peminjam['peminjam_status'] == 2 && (allow('1') || allow('2'))) : ?>
+                                            <div class="btn-group mt-2 btn-block">
+                                                <a href="<?= base_url('jurusan/userpeminjam/setujui/' . $peminjam['peminjam_id']); ?>" class="btn btn-success">Setujui</a>
+                                                <a href="<?= base_url('jurusan/userpeminjam/tolak/' . $peminjam['peminjam_id']); ?>" class="btn btn-danger">Tolak</a>
+                                            </div>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 </main>
 <?= $this->endSection(); ?>

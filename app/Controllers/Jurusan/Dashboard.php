@@ -7,6 +7,7 @@ use App\Models\informasi_barang_model;
 use App\Models\informasi_barang_pending_model;
 use App\Models\pengelolaan_barang_model;
 use App\Models\transaksi_peminjaman_model;
+use App\Models\user_peminjam_model;
 
 class Dashboard extends BaseController
 {
@@ -14,6 +15,7 @@ class Dashboard extends BaseController
     protected $transaksiPeminjamanModel;
     protected $informasiBarangModel;
     protected $barangPendingModel;
+    protected $userPeminjamModel;
 
     public function __construct()
     {
@@ -26,6 +28,7 @@ class Dashboard extends BaseController
         $this->transaksiPeminjamanModel = new transaksi_peminjaman_model();
         $this->informasiBarangModel = new informasi_barang_model();
         $this->barangPendingModel = new informasi_barang_pending_model();
+        $this->userPeminjamModel = new user_peminjam_model();
     }
 
     public function index()
@@ -36,6 +39,7 @@ class Dashboard extends BaseController
             'transaksiPeminjaman' => $this->transaksiPeminjamanModel->where(['pengajuan_status' => 2])->findAll(),
             'barangOri' => $this->informasiBarangModel,
             'barangPending' => $this->barangPendingModel,
+            'peminjamPending' => $this->userPeminjamModel->where(['peminjam_status' => 2])->findAll(),
         ];
 
         return view('jurusan/dashboard', $data);

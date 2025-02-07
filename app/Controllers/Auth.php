@@ -19,12 +19,28 @@ class Auth extends BaseController
         $username = $this->request->getVar('username');
         $password = $this->request->getVar('password');
         $row = $this->authModel->getLoginData($username, $table);
+        
+        // Cek jika data user tidak ditemukan
         if ($row == null) {
             session()->setFlashdata('gagal', 'Username atau Password anda salah.');
             return redirect()->to("/login");
         }
 
+        // Cek jika password cocok
         if ($password == $row->peminjam_password) {
+
+            // Cek status peminjam
+            if ($row->peminjam_status == 2) {
+                // Jika status pending, beri pesan
+                session()->setFlashdata('gagal', 'Akun sedang dalam masa pengajuan, mohon tunggu.');
+                return redirect()->to("/login");
+            } elseif ($row->peminjam_status == 0) {
+                // Jika status ditolak (inactive), beri pesan
+                session()->setFlashdata('gagal', 'Pengajuan Akun Ditolak.');
+                return redirect()->to("/login");
+            }
+
+            // Login sukses, set session
             $data = array(
                 'log' => TRUE,
                 'nama' => $row->peminjam_nama,
@@ -38,6 +54,7 @@ class Auth extends BaseController
             return redirect()->to("peminjam");
         }
 
+        // Password salah
         session()->setFlashdata('gagal', 'Username atau Password anda salah.');
         return redirect()->to("/login");
     }
