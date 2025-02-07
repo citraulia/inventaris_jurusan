@@ -8,30 +8,29 @@ class KategoriBarangSeeder extends Seeder
 {
     public function run()
     {
+        $currentDateTime = date('Y-m-d H:i:s');
+        
         $data = [
             [
-                'kategori_id'        => 1,
                 'kategori_nama'      => 'Elektronik',
                 'kategori_slug'      => 'elektronik',
                 'kategori_keterangan'=> 'Barang Inventaris yang merupakan barang elektorik selain dari komponen utama komputer.',
-                'created_at'         => '2022-02-06 07:59:03',
-                'updated_at'         => '2022-02-06 08:10:34'
+                'created_at'         => $currentDateTime,
+                'updated_at'         => $currentDateTime
             ],
             [
-                'kategori_id'        => 2,
                 'kategori_nama'      => 'Komputer',
                 'kategori_slug'      => 'komputer',
                 'kategori_keterangan'=> 'Barang Inventaris yang menjadi komponen utama sebuah komputer.',
-                'created_at'         => '2022-02-06 08:10:49',
-                'updated_at'         => '2022-02-06 08:10:49'
+                'created_at'         => $currentDateTime,
+                'updated_at'         => $currentDateTime
             ],
             [
-                'kategori_id'        => 3,
                 'kategori_nama'      => 'Sarana',
                 'kategori_slug'      => 'sarana',
                 'kategori_keterangan'=> 'Barang Inventaris Sarana Prasarana Jurusan.',
-                'created_at'         => '2022-02-06 08:11:11',
-                'updated_at'         => '2022-02-28 16:31:30'
+                'created_at'         => $currentDateTime,
+                'updated_at'         => $currentDateTime
             ]
         ];
 

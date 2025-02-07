@@ -8,24 +8,26 @@ class JenisPengelolaanSeeder extends Seeder
 {
     public function run()
     {
+        $currentDateTime = date('Y-m-d H:i:s');
+
         $data = [
             [
                 'jenis_id'    => 1,
                 'jenis_nama'  => 'TAMBAH',
-                'created_at'  => '2022-02-10 17:46:34',
-                'updated_at'  => '2022-02-10 17:46:34'
+                'created_at'  => $currentDateTime,
+                'updated_at'  => $currentDateTime
             ],
             [
                 'jenis_id'    => 2,
                 'jenis_nama'  => 'UBAH',
-                'created_at'  => '2022-02-10 17:46:34',
-                'updated_at'  => '2022-02-10 17:46:34'
+                'created_at'  => $currentDateTime,
+                'updated_at'  => $currentDateTime
             ],
             [
                 'jenis_id'    => 3,
                 'jenis_nama'  => 'HAPUS',
-                'created_at'  => '2022-02-10 17:46:34',
-                'updated_at'  => '2022-02-10 17:46:34'
+                'created_at'  => $currentDateTime,
+                'updated_at'  => $currentDateTime
             ]
         ];
 

@@ -8,6 +8,8 @@ class LokasiBarangSeeder extends Seeder
 {
     public function run()
     {
+        $currentDateTime = date('Y-m-d H:i:s');
+
         $data = [
             [
                 'lokasi_kode'     => 'R.4.04',
@@ -16,8 +18,8 @@ class LokasiBarangSeeder extends Seeder
                 'lokasi_lantai'   => 4,
                 'lokasi_fakultas' => 'Sains dan Teknologi',
                 'lokasi_keterangan'=> '',
-                'created_at'      => '2022-02-06 09:21:58',
-                'updated_at'      => '2022-02-28 17:02:07'
+                'created_at'      => $currentDateTime,
+                'updated_at'      => $currentDateTime
             ],
             [
                 'lokasi_kode'     => 'R.4.05',
@@ -26,8 +28,8 @@ class LokasiBarangSeeder extends Seeder
                 'lokasi_lantai'   => 4,
                 'lokasi_fakultas' => 'Sains dan Teknologi',
                 'lokasi_keterangan'=> '',
-                'created_at'      => '2022-02-09 12:28:24',
-                'updated_at'      => '2022-02-09 12:28:24'
+                'created_at'      => $currentDateTime,
+                'updated_at'      => $currentDateTime
             ],
             [
                 'lokasi_kode'     => 'R.4.09',
@@ -36,8 +38,8 @@ class LokasiBarangSeeder extends Seeder
                 'lokasi_lantai'   => 4,
                 'lokasi_fakultas' => 'Sains dan Teknologi',
                 'lokasi_keterangan'=> '',
-                'created_at'      => '2022-03-01 02:09:42',
-                'updated_at'      => '2022-03-01 02:09:51'
+                'created_at'      => $currentDateTime,
+                'updated_at'      => $currentDateTime
             ]
         ];
 

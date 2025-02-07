@@ -18,8 +18,6 @@ class DatabaseSeeder extends Seeder
         $this->call('KepalaBagianTuSeeder');
         $this->call('UserPeminjamSeeder');
         $this->call('UserJurusanSeeder');
-        $this->call('TransaksiPeminjamanSeeder');
-        $this->call('KumpulanBarangDipinjamSeeder');
         $this->call('PengelolaanBarangSeeder');
     }
 }

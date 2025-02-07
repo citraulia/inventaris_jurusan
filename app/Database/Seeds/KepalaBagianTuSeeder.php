@@ -8,13 +8,15 @@ class KepalaBagianTuSeeder extends Seeder
 {
     public function run()
     {
+        $currentDateTime = date('Y-m-d H:i:s');
+
         $data = [
             [
                 'tu_id'      => 1,
                 'tu_nama'    => 'Drs. Satiman',
                 'tu_nip'     => '196005011986031002',
-                'created_at' => '2022-02-08 16:26:15',
-                'updated_at' => '2022-02-08 09:46:00'
+                'created_at' => $currentDateTime,
+                'updated_at' => $currentDateTime
             ]
         ];
 
