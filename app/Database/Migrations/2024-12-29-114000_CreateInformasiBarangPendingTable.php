@@ -64,7 +64,7 @@ class CreateInformasiBarangPendingTable extends Migration
             'pending_status' => [
                 'type'       => 'SMALLINT',
                 'default'    => 1,
-                'comment'    => "'0' = INACTIVE, '1' = ACTIVE, '2' = DIPINJAMKAN",
+                'comment'    => "'0' = Dihapus, '1' = Active, '2' = Sedang Dipinjam, '3' = Pending, '4' = Sedang Perbaikan",
             ],
             'pending_dipinjamkan' => [
                 'type'       => 'SMALLINT',

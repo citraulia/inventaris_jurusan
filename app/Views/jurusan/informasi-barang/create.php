@@ -11,7 +11,7 @@
         <div class="card border-dark mb-3">
             <div class=" card-header">Tambah Barang</div>
             <div class="card-body text-dark">
-                <form action="<?= base_url('jurusan/informasibarang/save'); ?>" method="POST" enctype="multipart/form-data">
+                <form action="<?= base_url('jurusan/informasibarang/save'); ?>" method="POST" enctype="multipart/form-data" onsubmit="logFormData(event)">
                     <?= csrf_field(); ?>
                     <div class="form-group">
                         <label for="nama">Nama Barang</label>
@@ -127,5 +127,66 @@
             </div>
         </div>
     </div>
+    <script>
+        function logFormData(event) {
+            event.preventDefault();
+
+            const form = event.target;
+
+            const formData = new FormData(form);
+
+            for (const [key, value] of formData.entries()) {
+                console.log(`${key}:`, value);
+            }
+
+            form.submit();
+        }
+
+        document.getElementById('foto').addEventListener('change', function (event) {
+            const files = event.target.files;
+
+            console.log('File yang diunggah:');
+            Array.from(files).forEach(file => {
+                console.log(`- Nama: ${file.name}, Ukuran: ${file.size} bytes, Tipe: ${file.type}`);
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const keadaanDropdown = document.getElementById("keadaan");
+            const dipinjamkanDropdown = document.getElementById("dipinjamkan");
+
+            // Fungsi untuk memperbarui opsi "dipinjamkan" berdasarkan "keadaan"
+            function updateDipinjamkanOptions() {
+                const selectedKeadaan = keadaanDropdown.value;
+
+                // Hapus semua opsi pada dropdown "dipinjamkan"
+                while (dipinjamkanDropdown.options.length > 0) {
+                    dipinjamkanDropdown.remove(0);
+                }
+
+                if (selectedKeadaan === "RUSAK") {
+                    // Tambahkan hanya opsi "Tidak Dipinjamkan" jika keadaan adalah "RUSAK"
+                    const option = document.createElement("option");
+                    option.value = "0";
+                    option.text = "Tidak Dipinjamkan";
+                    dipinjamkanDropdown.add(option);
+                } else if (selectedKeadaan === "BAIK") {
+                    // Tambahkan kembali opsi "Tidak Dipinjamkan" dan "Boleh Dipinjamkan" jika keadaan adalah "BAIK"
+                    const option1 = document.createElement("option");
+                    option1.value = "0";
+                    option1.text = "Tidak Dipinjamkan";
+                    dipinjamkanDropdown.add(option1);
+
+                    const option2 = document.createElement("option");
+                    option2.value = "1";
+                    option2.text = "Boleh Dipinjamkan";
+                    dipinjamkanDropdown.add(option2);
+                }
+            }
+
+            updateDipinjamkanOptions();
+            keadaanDropdown.addEventListener("change", updateDipinjamkanOptions);
+        });
+    </script>
 </main>
 <?= $this->endSection('content'); ?>
