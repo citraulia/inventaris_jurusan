@@ -32,7 +32,7 @@
                                 <th>No.</th>
                                 <th>Nama</th>
                                 <th>No. Hp</th>
-                                <th>Alamat</th>
+                                <th>Email</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -41,7 +41,7 @@
                                 <th>No.</th>
                                 <th>Nama</th>
                                 <th>No. Hp</th>
-                                <th>Alamat</th>
+                                <th>Email</th>
                                 <th>Aksi</th>
                             </tr>
                         </tfoot>
@@ -52,7 +52,7 @@
                                     <td><?= $i++; ?></td>
                                     <td><?= $peminjam['peminjam_nama']; ?></td>
                                     <td><?= $peminjam['peminjam_hp']; ?></td>
-                                    <td><?= $peminjam['peminjam_alamat']; ?></td>
+                                    <td><?= $peminjam['peminjam_email']; ?></td>
                                     <td><a href="<?= base_url('jurusan/userpeminjam/' . $peminjam['peminjam_slug']); ?>" class="btn btn-info btn-block">Detail</td>
                                 </tr>
                             <?php endforeach; ?>

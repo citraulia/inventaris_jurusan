@@ -33,10 +33,10 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="inputAlamat">Alamat</label>
-                        <input type="text" class="form-control <?= ($validation->hasError('alamat')) ? 'is-invalid' : ''; ?>" id="inputAlamat" name="alamat" value="<?= (old('alamat')) ? old('alamat') : $userPeminjam['peminjam_alamat']; ?>">
-                        <div id="alamatFeedback" class="invalid-feedback">
-                            <?= $validation->getError('alamat'); ?>
+                        <label for="inputEmail">Email</label>
+                        <input type="email" class="form-control" id="inputEmail" name="email" value="<?= esc($userPeminjam['peminjam_email']); ?>">
+                        <div id="emailFeedback" class="invalid-feedback">
+                            <?= $validation->getError('email'); ?>
                         </div>
                     </div>
                     <p style="font-weight: bold;">Please re-enter or change password to confirm</p>
@@ -50,14 +50,14 @@
                         </div>
                         <div class="form-group col-md-4">
                             <label for="inputPassword">Password</label>
-                            <input type="password" class="form-control <?= ($validation->hasError('password')) ? 'is-invalid' : ''; ?>" id="inputPassword" name="password" />
+                            <input type="password" class="form-control <?= ($validation->hasError('password')) ? 'is-invalid' : ''; ?>" id="inputPassword" name="password" value="<?= $userPeminjam['peminjam_password']; ?>"/>
                             <div id="passwordFeedback" class="invalid-feedback">
                                 <?= $validation->getError('password'); ?>
                             </div>
                         </div>
                         <div class="form-group col-md-4">
                             <label for="inputConfirmPassword">Password</label>
-                            <input type="password" class="form-control <?= ($validation->hasError('confirmPassword')) ? 'is-invalid' : ''; ?>" id="inputConfirmPassword" name="confirmPassword" />
+                            <input type="password" class="form-control <?= ($validation->hasError('confirmPassword')) ? 'is-invalid' : ''; ?>" id="inputConfirmPassword" name="confirmPassword" value="<?= $userPeminjam['peminjam_password']; ?>"/>
                             <div id="confirmPasswordFeedback" class="invalid-feedback">
                                 <?= $validation->getError('confirmPassword'); ?>
                             </div>

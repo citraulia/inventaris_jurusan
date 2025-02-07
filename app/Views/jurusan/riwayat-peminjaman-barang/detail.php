@@ -69,8 +69,8 @@ function getBarang($kode)
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="readAlamat">Alamat</label>
-                        <input type="text" class="form-control" id="readAlamat" name="alamat" style="font-weight: bold;" value="<?= $peminjam['peminjam_alamat']; ?>" readonly>
+                        <label for="readAlamat">Email</label>
+                        <input type="text" class="form-control" id="readEmail" name="email" style="font-weight: bold;" value="<?= $peminjam['peminjam_email']; ?>" readonly>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-6">
@@ -109,10 +109,9 @@ function getBarang($kode)
                                             <th>Kode</th>
                                             <th>Nama</th>
                                             <th>Merk</th>
-                                            <th>Keadaan</th>
                                             <th>Lokasi</th>
+                                            <th>Status</th>
                                             <th>Aksi</th>
-                                            <th>Detail Barang</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
@@ -121,10 +120,9 @@ function getBarang($kode)
                                             <th>Kode</th>
                                             <th>Nama</th>
                                             <th>Merk</th>
-                                            <th>Keadaan</th>
                                             <th>Lokasi</th>
+                                            <th>Status</th>
                                             <th>Aksi</th>
-                                            <th>Detail Barang</th>
                                         </tr>
                                     </tfoot>
                                     <tbody>
@@ -137,40 +135,47 @@ function getBarang($kode)
                                                 <td><?= $barangPinjaman['barang_kode']; ?></td>
                                                 <td><?= $barangPinjaman['barang_nama']; ?></td>
                                                 <td><?= $barangPinjaman['barang_merk']; ?></td>
-                                                <td><?= $barangPinjaman['barang_keadaan']; ?></td>
                                                 <td><?= $barangPinjaman['lokasi_fk']; ?></td>
                                                 <td>
-                                                    <?php if (isset($barang['status_barang'])): ?>
-                                                        <?php if ($barang['status_barang'] == 1): ?>
-                                                            <span class="badge badge-success">Disetujui</span>
-                                                        <?php elseif ($barang['status_barang'] == 0): ?>
-                                                            <span class="badge badge-danger">Ditolak</span>
-                                                        <?php else: ?>
-                                                            <?php if (session('user_level') == 1): ?>
-                                                                <form action="<?= base_url('jurusan/riwayatpeminjamanbarang/setujuiBarang'); ?>" method="POST">
-                                                                    <?= csrf_field(); ?>
-                                                                    <input type="hidden" name="transaksi_id" value="<?= $transaksiPeminjaman['transaksi_id']; ?>">
-                                                                    <input type="hidden" name="barang_id" value="<?= $barang['barang_dipinjam_fk']; ?>">
-                                                                    <button type="submit" class="btn btn-success btn-sm">Setujui</button>
-                                                                </form>
-                                                                <form action="<?= base_url('jurusan/riwayatpeminjamanbarang/tolakBarang'); ?>" method="POST">
-                                                                    <?= csrf_field(); ?>
-                                                                    <input type="hidden" name="transaksi_id" value="<?= $transaksiPeminjaman['transaksi_id']; ?>">
-                                                                    <input type="hidden" name="barang_id" value="<?= $barang['barang_dipinjam_fk']; ?>">
-                                                                    <button type="submit" class="btn btn-danger btn-sm">Tolak</button>
-                                                                </form>
-                                                            <?php else: ?>
-                                                                <span class="badge badge-warning">Pending</span>
-                                                            <?php endif; ?>
-                                                        <?php endif; ?>
-                                                    <?php else: ?>
-                                                        <span class="badge badge-secondary">Pending</span>
-                                                    <?php endif; ?>
+                                                    <span class="badge text-white
+                                                        <?php if ($barang['status_barang'] == 2) {
+                                                            echo 'bg-warning'; // Pending
+                                                        } elseif ($barang['status_barang'] == 1) {
+                                                            echo 'bg-success'; // Disetujui
+                                                        } elseif ($barang['status_barang'] == 0) {
+                                                            echo 'bg-danger'; // Ditolak
+                                                        } ?>">
+                                                        <?php 
+                                                        if ($barang['status_barang'] == 2) {
+                                                            echo 'Pending';
+                                                        } elseif ($barang['status_barang'] == 1) {
+                                                            echo 'Disetujui';
+                                                        } else {
+                                                            echo 'Ditolak';
+                                                        }
+                                                        ?>
+                                                    </span>
                                                 </td>
                                                 <td>
                                                     <div class="btn-group btn-block">
                                                         <a href="<?= base_url('jurusan/informasibarang/' . $barangPinjaman['barang_kode']); ?>" class="btn btn-info">Detail</a>
                                                     </div>
+                                                    <?php if ($barang['status_barang'] == 2 && allow('1')): ?>
+                                                        <form action="<?= base_url('jurusan/riwayatpeminjamanbarang/tolakBarang'); ?>" method="POST">
+                                                            <div class="btn-group btn-block">
+                                                                <input type="hidden" name="transaksi_id" value="<?= $transaksiPeminjaman['transaksi_id']; ?>">
+                                                                <input type="hidden" name="barang_id" value="<?= $barang['barang_dipinjam_fk']; ?>">
+                                                                <button type="submit" class="btn btn-danger btn-sm">Tolak per Barang</button>
+                                                            </div>
+                                                        </form>
+                                                        <form action="<?= base_url('jurusan/riwayatpeminjamanbarang/setujuiBarang'); ?>" method="POST">
+                                                            <div class="btn-group btn-block">
+                                                                <input type="hidden" name="transaksi_id" value="<?= $transaksiPeminjaman['transaksi_id']; ?>">
+                                                                <input type="hidden" name="barang_id" value="<?= $barang['barang_dipinjam_fk']; ?>">
+                                                                <button type="submit" class="btn btn-success btn-sm">Setujui per Barang</button>
+                                                            </div>
+                                                        </form>
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                         <?php endforeach ?>
@@ -180,19 +185,19 @@ function getBarang($kode)
                         </div>
                     </div>
 
-                    <?php if (allow('1', '2')) : ?>
+                    <?php if (allow('1') || allow('2')) : ?>
                         <?php if ($transaksiPeminjaman['pengajuan_status'] == 2) : ?>
                             <div class="form-row">
                                 <form action="<?= base_url('Jurusan/RiwayatPeminjamanBarang/setujui/' . $transaksiPeminjaman['transaksi_id']); ?>" method="POST">
                                     <div class="btn-group">
                                         <input type="hidden" id="id" name="id" value="<?= $transaksiPeminjaman['transaksi_id']; ?>" />
-                                        <button type="submit" href="#" class="btn btn-success ">Setujui</button>
+                                        <button type="submit" href="#" class="btn btn-success ">Setujui Seluruh Peminjaman Barang</button>
                                     </div>
                                 </form>
                                 <form action="<?= base_url('Jurusan/RiwayatPeminjamanBarang/tolak/' . $transaksiPeminjaman['transaksi_id']); ?>" method="POST">
                                     <div class="btn-group btn-block">
                                         <input type="hidden" id="id" name="id" value="<?= $transaksiPeminjaman['transaksi_id']; ?>" />
-                                        <button type="submit" href="#" class="btn btn-danger">Tolak</button>
+                                        <button type="submit" href="#" class="btn btn-danger">Tolak Seluruh Peminjaman Barang</button>
                                     </div>
                                 </form>
                             </div>
